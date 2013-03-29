@@ -5,8 +5,6 @@ import java.io.Serializable;
 /**
  * Key used to point to the Object Pool Entry(s)
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <K> the key type
  * @author Jeremy Unruh
  */

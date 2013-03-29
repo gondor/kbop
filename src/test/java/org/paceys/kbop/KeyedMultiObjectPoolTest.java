@@ -14,12 +14,9 @@ import org.pacesys.kbop.PoolKey;
 import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
 import org.testng.annotations.Test;
 
-
 /**
  * Test against Keyed Multi Object Pools
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @author Jeremy Unruh
  */
 @Test(testName="Keyed Multi Object Pool Tests")

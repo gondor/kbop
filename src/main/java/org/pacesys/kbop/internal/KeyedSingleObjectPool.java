@@ -8,8 +8,6 @@ import org.pacesys.kbop.PoolMetrics;
 /**
  * Thread-Safe Single Key to Object based Blocking Pool.
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <K> the key type
  * @param <V> the pooled object
  * 

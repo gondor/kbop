@@ -17,13 +17,10 @@ import org.pacesys.kbop.IPoolObjectFactory;
 import org.pacesys.kbop.IPooledObject;
 import org.pacesys.kbop.PoolKey;
 
-
 /**
  * Thread-Safe - Abstract synchronous (blocking) pool of Objects which provides the base implementation for single key to single object and single key to multiple object
  * pool implementations.
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <K> The internal pool key type
  * @param <V> the object to Borrow
  * @param <E> the pool object holder containing the pooled object

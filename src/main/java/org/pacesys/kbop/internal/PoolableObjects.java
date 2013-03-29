@@ -7,12 +7,9 @@ import java.util.Set;
 
 import org.pacesys.kbop.IPooledObject;
 
-
 /**
  * Defines an Key Object Pool which supports multiple objects available for leasing/acquiring
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <V> Contained Object Type
  * @author Jeremy Unruh
  */

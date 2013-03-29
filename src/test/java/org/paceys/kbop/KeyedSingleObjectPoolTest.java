@@ -22,8 +22,6 @@ import org.testng.annotations.Test;
 /**
  * Keyed Single Object Pool functional Tests
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @author Jeremy Unruh
  */
 @Test(testName="Keyed Single Object Pool Tests")

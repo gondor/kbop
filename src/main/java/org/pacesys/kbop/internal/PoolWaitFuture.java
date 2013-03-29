@@ -12,8 +12,6 @@ import java.util.concurrent.locks.Lock;
 /**
  * A future which waits until the Pooled Object is available or times out
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <T> the generic type
  * @author Jeremy Unruh
  */

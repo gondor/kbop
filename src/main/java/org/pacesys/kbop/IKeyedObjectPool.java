@@ -5,14 +5,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
 
-
 /**
  * Keyed Object Pool which associates Object(s) available to borrow against a Key.  When an object is borrowed the thread who obtained it has full rights
  * to use the object as well as the ability to keep borrowing until the Object is finally released back into the pool signally other waiting threads the right to
  * borrow the same object.
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <K> the key type
  * @param <V> the Object being borrowed Type
  * @author Jeremy Unruh

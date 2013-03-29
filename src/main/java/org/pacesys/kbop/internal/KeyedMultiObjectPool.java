@@ -11,12 +11,9 @@ import org.pacesys.kbop.PoolKey;
 import org.pacesys.kbop.PoolMetrics.KeyMetric;
 import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
 
-
 /**
  * Thread Safe - Single Key to Multiple Object Pool
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <K> the key type
  * @param <V> the value type
  * @author Jeremy Unruh

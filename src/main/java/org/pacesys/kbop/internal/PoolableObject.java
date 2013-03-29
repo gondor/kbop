@@ -7,8 +7,6 @@ import org.pacesys.kbop.PoolKey;
 /**
  * Internal Implementation of IPooledObject which holds onto the internal Object V, Key and Pool which created this Object
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <V> the value type
  * @author Jeremy Unruh
  */

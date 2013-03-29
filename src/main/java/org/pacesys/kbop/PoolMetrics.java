@@ -7,8 +7,6 @@ import java.util.Map;
 /**
  * Provides a metrics snapshot for a Pool
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @author Jeremy Unruh
  */
 public class PoolMetrics<K> implements Serializable {

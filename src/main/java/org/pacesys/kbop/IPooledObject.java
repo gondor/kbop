@@ -3,8 +3,6 @@ package org.pacesys.kbop;
 /**
  * A Object Pool Entry which wraps the underlying borrowed Object as V.  
  * 
- * <p>Copyright (c) 2013 by Dorado Software, Inc. All Rights Reserved.
- *
  * @param <V> the value type
  * @author Jeremy Unruh
  */
