@@ -4,3 +4,10 @@
 *.jar
 *.war
 *.ear
+!.gitignore
+.classpath
+.project
+.orig
+Thumbs.db
+test-output
+.DS_Store
