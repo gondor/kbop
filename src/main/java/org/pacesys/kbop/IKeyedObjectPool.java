@@ -29,7 +29,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * and it is the responsibility of the borrower to properly release the borrowed Object.  Failure to do so when prevent other threads from borrowing the
 	 * object.
 	 * 
-	 * This call will block until the Object associated with the Key is available.  If more control is desired then see {@link #borrow(PoolKey, long, TimeUnit)} which 
+	 * This call will block until the Object associated with the Key is available.  If more control is desired then see {@link #borrow(K, long, TimeUnit)} which 
 	 * allows a max time to wait
 	 *
 	 * @param key the Pool Key used to lookup the Object to borrow
@@ -37,7 +37,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * @throws IllegalStateException if the Pool has been shutdown
 	 * @throws Exception  if the thread was interrupted or an error occurred during the creation of a new Object which didn't exist in the Pool.
 	 */
-	IPooledObject<V> borrow(PoolKey<K> key) throws Exception;
+	IPooledObject<V> borrow(K key) throws Exception;
 
 	/**
 	 * Attempts to borrow an Object from the Pool with the given Key.  Please note that upon successful retrieval of the borrowed object it is
@@ -56,7 +56,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * @throws IllegalStateException if the Pool has been shutdown
 	 * @throws Exception if the thread was interrupted or an error occurred during the creation of a new Object which didn't exist in the Pool.
 	 */
-	IPooledObject<V> borrow(PoolKey<K> key, long timeout, TimeUnit unit) throws TimeoutException, Exception;
+	IPooledObject<V> borrow(K key, long timeout, TimeUnit unit) throws TimeoutException, Exception;
 
 	/**
 	 * Releases the Borrowed Object back into the Pool and makes it available for borrowing
@@ -78,7 +78,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * method call may be ignored.  
 	 * @param key the key to clear
 	 */
-	void clear(PoolKey<K> key);
+	void clear(K key);
 
 	/**
 	 * Shuts down the current Pool stopping Allocations

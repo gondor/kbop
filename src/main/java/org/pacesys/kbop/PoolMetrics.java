@@ -110,9 +110,9 @@ public class PoolMetrics<K> implements Serializable {
 	   * @return Key Metric if this is a Multi Object Pool and the Key exists otherwise null
 	   * @see #hasMetricsForKey(PoolKey)
 	   */
-	  public KeyMetric getKeyMetrics(PoolKey<K> key) {
+	  public KeyMetric getKeyMetrics(K key) {
 		if (keyMetrics != null)
-		  return keyMetrics.get(key);
+		  return keyMetrics.get(PoolKey.lookup(key));
 		return null;
 	  }
 
@@ -121,8 +121,8 @@ public class PoolMetrics<K> implements Serializable {
 	   * @param key the Pool Key to query metrics for
 	   * @return true if metrics are available for the given {@code key}
 	   */
-	  public boolean hasMetricsForKey(PoolKey<K> key) {
-		return (keyMetrics != null && keyMetrics.containsKey(key));
+	  public boolean hasMetricsForKey(K key) {
+		return (keyMetrics != null && keyMetrics.containsKey(PoolKey.lookup(key)));
 	  }
   	
   }

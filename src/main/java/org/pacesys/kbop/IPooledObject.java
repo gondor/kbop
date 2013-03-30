@@ -38,5 +38,10 @@ public interface IPooledObject<V> {
    * @return the Pool Key
    */
   <K> PoolKey<K> getKey();
+  
+  /**
+   * @return the user inner key
+   */
+  <K> K getUserKey();
 
 }

@@ -11,3 +11,6 @@
 Thumbs.db
 test-output
 .DS_Store
+target
+release.properties
+.settings
