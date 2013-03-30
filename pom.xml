@@ -9,7 +9,7 @@
 	<artifactId>kbop</artifactId>
 	<name>Keyed Blocking Object Pool</name>
 	<description>Key Blocking Object Pool is a thread safe Single Key to 1 to N Objects.</description>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<url>http://github.com/gondor/kbop/</url>
 	<packaging>jar</packaging>
 	<properties>
