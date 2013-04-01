@@ -92,7 +92,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * @param <V> the Object being borrowed Type
 	 * @author Jeremy Unruh
 	 */
-	public interface Multi<K, V> extends IKeyedObjectPool<K, V> {
+	interface Multi<K, V> extends IKeyedObjectPool<K, V> {
 		/**
 		 * Calculates current metrics and returns a snapshot of Borrowed, Waiting counts and more
 		 * @return PoolMetrics
@@ -107,7 +107,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * @param <V> the Object being borrowed Type
 	 * @author Jeremy Unruh
 	 */
-	public interface Single<K, V> extends IKeyedObjectPool<K, V> {
+	interface Single<K, V> extends IKeyedObjectPool<K, V> {
 		/**
 		 * Calculates current metrics and returns a snapshot of Borrowed, Waiting counts and more
 		 * @return PoolMetrics

@@ -161,7 +161,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 				if (entry != null) 
 					return entry.flagOwner();
 
-				if (!await(future, key, deadline) && (deadline != null) && (deadline.getTime() <= System.currentTimeMillis()))  break;
+				if (!await(future, key, deadline) && deadline != null && deadline.getTime() <= System.currentTimeMillis())  break;
 
 			}
 			throw new TimeoutException("Timeout waiting for Pool for Key: " + key);
@@ -200,7 +200,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 			return entry;
 		}
 
-		return (entry.isCurrentOwner()) ? entry : null;
+		return entry.isCurrentOwner() ? entry : null;
 	}
 
 	/**
