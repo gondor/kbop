@@ -19,9 +19,91 @@ Maven Dependency Setup
 
 ## Usage
 
-Single Key to Single Object Based Pool
+Creating : Single Key to Single Object Based Pool
 ```java
 IKeyedObjectPool.Single<String,MyObject>> pool = Pools.createPool(factory));
 ````
 
-### TODO Finish this Readme
+Creating : Single Key to Multiple Object Based Pool
+```java
+IKeyedObjectPool.Multi<MyKey, MyObject> = Pools.createMultiPool(factory, maxItemsPerKey)
+````
+
+Borrowing Objects from the Pool - Block until available
+```java
+// borrow an object and block until available
+IPooledObject<MyObject> obj = pool.borrow(key);
+````
+
+Borrowing Objects from the Pool - Block until max time has elapsed
+```java
+IPooledObject<MyObject> obj = pool.borrow(key, 1, TimeUnit.SECONDS);
+````
+
+Releasing Objects back to the Pool
+```java
+IPooledObject<MyObject> obj = pool.borrow(key);
+
+// Release via borrowed Object
+obj.release();
+
+// Release via Pool
+pool.release(obj);
+````
+
+Invalidating a borrowed object - The pool will release the object and destroy it.  The next time
+an object is requested for the same key the pool will re-create a new instance
+```java
+IPooledObject<MyObject> obj = pool.borrow(key);
+pool.invalidate(obj);
+````
+
+Shutting down a Pool
+```java
+pool.shutdown();
+````
+
+Implementing a Factory to Create Objects when needed to populate a Pool
+```java
+IPoolObjectFactory<String, MyObject> factory = new IPoolObjectFactory<String, MyObject>() 
+{
+  /**
+   * Creates the defined Object V based on the current Pool Key.
+   *
+   * @param key the key being requested
+   * @return the Object to be inserted into the Pool
+   */
+  public String create(PoolKey<String> key) {
+     // Create the Object based on the Key
+     return new MyObject();
+  }
+
+  /**
+   * Reinitialize an instance to be returned to the borrower
+   *
+   * @param object the object being borrowed
+   */
+  @Override
+  public void activate(MyObject object) {
+    // called right
+  }
+
+  /**
+   * Uninitialize an instance which has been released back to the pool
+   *
+   * @param object the object to which has just beel released
+   */
+  @Override
+  public void passivate(String object) {
+  }
+
+  /**
+   * Destroy/Release an instance no longer needed by the pool
+   *
+   * @param object the object to destroy
+   */
+  @Override
+  public void destroy(String object) {
+  }
+};
+````
