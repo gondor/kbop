@@ -108,7 +108,8 @@ IPoolObjectFactory<String, MyObject> factory = new IPoolObjectFactory<String, My
 };
 ````
 
-License:
+# License:
+
 KBOP is hereby released under the MIT License.
 
 Copyright (c) 2013 Jeremy Unruh
