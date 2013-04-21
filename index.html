@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Key Based Object Pool : Thread safe, fast, lightweight Key Based Object Pool" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Key Based Object Pool</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/gondor/kbop">View on GitHub</a>
+
+          <h1 id="project_title">Key Based Object Pool</h1>
+          <h2 id="project_tagline">Thread safe, fast, lightweight Key Based Object Pool</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gondor/kbop/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gondor/kbop/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Key Based Object Pool 1.0.0</h1>
+
+<h1></h1>
+
+<p>*Key Based Object Pooling (Thread Safe, Simple and Light) aka KBOP</p>
+
+<p>KBOP is a lightweight Keyed Object Pool which supports Single Key to Single Object Pooling or Single Key to Multiple Object Pooling.  KBOP provides factory lifecycles, metrics, borrowing, releasing and object invalidation.</p>
+
+<h3>Setup</h3>
+
+<p>Maven Dependency Setup</p>
+
+<div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.pacesys<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>kbop<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+
+<h2>Usage</h2>
+
+<p>Creating : Single Key to Single Object Based Pool</p>
+
+<div class="highlight"><pre><span class="n">IKeyedObjectPool</span><span class="o">.</span><span class="na">Single</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">MyObject</span><span class="o">&gt;&gt;</span> <span class="n">pool</span> <span class="o">=</span> <span class="n">Pools</span><span class="o">.</span><span class="na">createPool</span><span class="o">(</span><span class="n">factory</span><span class="o">));</span>
+</pre></div>
+
+<p>Creating : Single Key to Multiple Object Based Pool</p>
+
+<div class="highlight"><pre><span class="n">IKeyedObjectPool</span><span class="o">.</span><span class="na">Multi</span><span class="o">&lt;</span><span class="n">MyKey</span><span class="o">,</span> <span class="n">MyObject</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">Pools</span><span class="o">.</span><span class="na">createMultiPool</span><span class="o">(</span><span class="n">factory</span><span class="o">,</span> <span class="n">maxItemsPerKey</span><span class="o">)</span>
+</pre></div>
+
+<p>Borrowing Objects from the Pool - Block until available</p>
+
+<div class="highlight"><pre><span class="c1">// borrow an object and block until available</span>
+<span class="n">IPooledObject</span><span class="o">&lt;</span><span class="n">MyObject</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">borrow</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</pre></div>
+
+<p>Borrowing Objects from the Pool - Block until max time has elapsed</p>
+
+<div class="highlight"><pre><span class="n">IPooledObject</span><span class="o">&lt;</span><span class="n">MyObject</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">borrow</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+</pre></div>
+
+<p>Releasing Objects back to the Pool</p>
+
+<div class="highlight"><pre><span class="n">IPooledObject</span><span class="o">&lt;</span><span class="n">MyObject</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">borrow</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+
+<span class="c1">// Release via borrowed Object</span>
+<span class="n">obj</span><span class="o">.</span><span class="na">release</span><span class="o">();</span>
+
+<span class="c1">// Release via Pool</span>
+<span class="n">pool</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</pre></div>
+
+<p>Invalidating a borrowed object - The pool will release the object and destroy it.  The next time
+an object is requested for the same key the pool will re-create a new instance</p>
+
+<div class="highlight"><pre><span class="n">IPooledObject</span><span class="o">&lt;</span><span class="n">MyObject</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">borrow</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+<span class="n">pool</span><span class="o">.</span><span class="na">invalidate</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</pre></div>
+
+<p>Shutting down a Pool</p>
+
+<div class="highlight"><pre><span class="n">pool</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
+</pre></div>
+
+<p>Implementing a Factory to Create Objects when needed to populate a Pool</p>
+
+<div class="highlight"><pre><span class="n">IPoolObjectFactory</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MyObject</span><span class="o">&gt;</span> <span class="n">factory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IPoolObjectFactory</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MyObject</span><span class="o">&gt;()</span> 
+<span class="o">{</span>
+  <span class="cm">/**</span>
+<span class="cm">   * Creates the defined Object V based on the current Pool Key.</span>
+<span class="cm">   *</span>
+<span class="cm">   * @param key the key being requested</span>
+<span class="cm">   * @return the Object to be inserted into the Pool</span>
+<span class="cm">   */</span>
+  <span class="kd">public</span> <span class="n">String</span> <span class="nf">create</span><span class="o">(</span><span class="n">PoolKey</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+     <span class="c1">// Create the Object based on the Key</span>
+     <span class="k">return</span> <span class="k">new</span> <span class="nf">MyObject</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Reinitialize an instance to be returned to the borrower</span>
+<span class="cm">   *</span>
+<span class="cm">   * @param object the object being borrowed</span>
+<span class="cm">   */</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">activate</span><span class="o">(</span><span class="n">MyObject</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// called right</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Uninitialize an instance which has been released back to the pool</span>
+<span class="cm">   *</span>
+<span class="cm">   * @param object the object to which has just beel released</span>
+<span class="cm">   */</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">passivate</span><span class="o">(</span><span class="n">String</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Destroy/Release an instance no longer needed by the pool</span>
+<span class="cm">   *</span>
+<span class="cm">   * @param object the object to destroy</span>
+<span class="cm">   */</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">destroy</span><span class="o">(</span><span class="n">String</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+  <span class="o">}</span>
+<span class="o">};</span>
+</pre></div>
+
+<h1>License:</h1>
+
+<p>KBOP is hereby released under the MIT License.</p>
+
+<p>Copyright (c) 2013 Jeremy Unruh</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Key Based Object Pool maintained by <a href="https://github.com/gondor">gondor</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
