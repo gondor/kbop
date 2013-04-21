@@ -5,6 +5,10 @@
 
 KBOP is a lightweight Keyed Object Pool which supports Single Key to Single Object Pooling or Single Key to Multiple Object Pooling.  KBOP provides factory lifecycles, metrics, borrowing, releasing and object invalidation.
 
+### About
+[API Documentation](http://www.kbop.org/apidocs)
+[KBOP Page](http://www.kbop.org)
+
 ### Setup
 
 Maven Dependency Setup
