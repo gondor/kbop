@@ -1,7 +1,6 @@
 # Key Based Object Pool 1.0.0
-====
 
-*Key Based Object Pooling (Thread Safe, Simple and Light) aka KBOP
+*Key Based Object Pooling (Thread Safe, Simple and Light) aka KBOP*
 
 KBOP is a lightweight Keyed Object Pool which supports Single Key to Single Object Pooling or Single Key to Multiple Object Pooling.  KBOP provides factory lifecycles, metrics, borrowing, releasing and object invalidation.
 
