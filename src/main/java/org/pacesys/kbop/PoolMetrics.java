@@ -15,11 +15,11 @@ public class PoolMetrics<K> implements Serializable {
 
 	private static final long serialVersionUID = -2325874226714753991L;
 
-	private int borrowedCount;
-	private int waitingCount;
-	private int maxObjectsPerKey;
-	private int keyCount;
-	private Date collectedDate;
+	private final int borrowedCount;
+	private final int waitingCount;
+	private final int maxObjectsPerKey;
+	private final int keyCount;
+	private final Date collectedDate;
 
 	/**
 	 * Instantiates a new pool metrics.
@@ -99,7 +99,7 @@ public class PoolMetrics<K> implements Serializable {
 	public static class PoolMultiMetrics<K> extends PoolMetrics<K> {
 
 		private static final long serialVersionUID = 5188832983690021017L;
-		private Map<PoolKey<K>, KeyMetric> keyMetrics;
+		private final Map<PoolKey<K>, KeyMetric> keyMetrics;
 
 		public PoolMultiMetrics(int borrowedCount, int waitingCount, int maxObjectsPerKey, Map<PoolKey<K>, KeyMetric> keyMetrics) {
 			super(borrowedCount, waitingCount, maxObjectsPerKey, keyMetrics.size());
@@ -110,7 +110,7 @@ public class PoolMetrics<K> implements Serializable {
 		 * Only Object Pools with a maxItemsPerKey > 1 will populate Key Metrics.  Single Key to Object Pools do not populate this call
 		 * so null is returned.
 		 * @return Key Metric if this is a Multi Object Pool and the Key exists otherwise null
-		 * @see #hasMetricsForKey(PoolKey)
+		 * @see #hasMetricsForKey(Object)
 		 */
 		@Nullable
 		public KeyMetric getKeyMetrics(K key) {
@@ -133,9 +133,9 @@ public class PoolMetrics<K> implements Serializable {
 	public static class KeyMetric implements Serializable {
 
 		private static final long serialVersionUID = 916100737260197225L;
-		private int allocationSize;
-		private int borrowedCount;
-		private int waitingCount;
+		private final int allocationSize;
+		private final int borrowedCount;
+		private final int waitingCount;
 
 		public KeyMetric(int allocationSize, int borrowedCount, int waitingCount) {
 			super();

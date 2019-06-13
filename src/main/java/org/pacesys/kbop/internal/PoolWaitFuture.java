@@ -1,8 +1,8 @@
 package org.pacesys.kbop.internal;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -88,17 +88,16 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
    * @param timeout the timeout
    * @param unit the unit
    * @return the entry
-   * @throws IOException Signals that an I/O exception has occurred.
    * @throws InterruptedException the interrupted exception
    * @throws TimeoutException the timeout exception
    */
-  protected abstract T getPoolObject(long timeout, TimeUnit unit) throws IOException, InterruptedException, TimeoutException;
+  protected abstract T getPoolObject(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+  public T get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, TimeoutException {
 	this.lock.lock();
 	try {
 	  if (this.completed) {
@@ -107,10 +106,6 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
 	  this.result = getPoolObject(timeout, unit);
 	  this.completed = true;
 	  return result;
-	} catch (IOException ex) {
-	  this.completed = true;
-	  this.result = null;
-	  throw new ExecutionException(ex);
 	} finally {
 	  this.lock.unlock();
 	}
@@ -129,7 +124,7 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
 	  if (this.cancelled) {
 		throw new InterruptedException("Operation interrupted");
 	  }
-	  boolean success = false;
+	  boolean success;
 	  if (deadline != null) {
 		success = this.condition.awaitUntil(deadline);
 	  } else {

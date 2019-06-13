@@ -14,9 +14,8 @@ import org.pacesys.kbop.PoolKey;
  */
 public class PoolableObject<V, K> implements IPooledObject<V, K> {
 
-	private long created;
-	private long expiry;
-	private V object;
+	private final long created;
+	private final V object;
 	private PoolKey<K> key;
 	private IKeyedObjectPool<K, V> pool;
 	private Thread owner;
@@ -62,12 +61,9 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	 * Releases the current owning thread from this Object
 	 *
 	 * @param <E> the Entry type
-	 * @return PoolableObject for method chaining
 	 */
-	@SuppressWarnings("unchecked")
-	<E extends PoolableObject<V, K>> E releaseOwner() {
+	<E extends PoolableObject<V, K>> void releaseOwner() {
 		this.owner = null;
-		return (E) this;
 	}
 
 	/**
@@ -92,8 +88,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	 */
 	@Override
 	public String toString() {
-		return "PoolableObject [created=" + created + ", expiry=" + expiry
-				+ ", object=" + object + "]";
+		return "PoolableObject [created=" + created + ", object=" + object + "]";
 	}
 
 	/**
@@ -101,23 +96,6 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	 */
 	public V get() {
 		return object;
-	}
-
-	/**
-	 * Determines if this Object has expired
-	 *
-	 * @param now time to compare against
-	 * @return true, if is expired
-	 */
-	public boolean isExpired(long now) {
-		return now >= expiry;
-	}
-
-	/**
-	 * @return the expiry time for this Object
-	 */
-	public long getExpiry() {
-		return expiry;
 	}
 
 	/**

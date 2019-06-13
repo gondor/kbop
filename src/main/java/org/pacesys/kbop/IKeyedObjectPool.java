@@ -74,13 +74,6 @@ public interface IKeyedObjectPool<K, V> {
 	void invalidate(IPooledObject<V, K> borrowedObject);
 
 	/**
-	 * Clears the specified pool, removing all pooled instances corresponding to the given key.  Depending on the underlying Pool Implementation this
-	 * method call may be ignored.  
-	 * @param key the key to clear
-	 */
-	void clear(K key);
-
-	/**
 	 * Shuts down the current Pool stopping Allocations
 	 */
 	void shutdown();

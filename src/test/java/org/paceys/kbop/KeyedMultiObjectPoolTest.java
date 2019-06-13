@@ -32,6 +32,7 @@ public class KeyedMultiObjectPoolTest extends
 	}
 	
 	@Test
+	@SuppressWarnings("ConstantConditions")
 	public void allocationSizeShouldNotGrowAfterInvalidate() {
 		maxAllocatedTestAgainstSameKey();
 		
@@ -60,6 +61,7 @@ public class KeyedMultiObjectPoolTest extends
 	}
 	
 	@Test
+	@SuppressWarnings("ConstantConditions")
 	public void highConcurrencyVolumeTest() {
 		maxAllocatedTestAgainstSameKey();
 		
@@ -124,6 +126,7 @@ public class KeyedMultiObjectPoolTest extends
 		}
 	}
 	
+	@SuppressWarnings("ConstantConditions")
 	private void validateBorrowFromPool(String key, ExecutionContext context) {
 		IPooledObject<String, String> obj = null;
 		try {

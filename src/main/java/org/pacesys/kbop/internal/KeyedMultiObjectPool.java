@@ -21,7 +21,7 @@ import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
  */
 public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, PoolableObject<V, K>> implements IKeyedObjectPool.Multi<K, V> {
 
-	private int maxPerKey;
+	private final int maxPerKey;
 
 	/**
 	 * Instantiates a new keyed multi object pool.
@@ -32,9 +32,7 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 		super(factory);
 		this.maxPerKey = maxPerKey;
 	}
-
-
-	@SuppressWarnings("unchecked")
+	
 	protected void release(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		lock.lock();
 		if (borrowed.remove(borrowedObject))
@@ -47,14 +45,15 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 					factory.destroy(borrowedObject.get());
 
 				pos.free(borrowedObject, reusable);
+				
+				notifyWaiting(pos);
 			}
 
-			notifyWaiting(pos);
 		}
 		lock.unlock();
 	}
 
-	protected void notifyWaiting(PoolableObjects<V, K> pooledObjects) {
+	private void notifyWaiting(PoolableObjects<V, K> pooledObjects) {
 		PoolWaitFuture<PoolableObject<V, K>> future = pooledObjects.nextWaiting();
 		if (future != null)
 			waiting.remove(future);
@@ -66,11 +65,11 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 		}
 	}
 
-	PoolableObjects<V, K> objectPool(PoolKey<K> key) {
+	private PoolableObjects<V, K> objectPool(PoolKey<K> key) {
 		return objectPool(key, Boolean.TRUE);
 	}
 
-	PoolableObjects<V, K> objectPool(PoolKey<K> key, boolean createIfNotFound) {
+	private PoolableObjects<V, K> objectPool(PoolKey<K> key, boolean createIfNotFound) {
 		PoolableObjects<V, K> pobjs = (PoolableObjects<V, K>) pool.get(key);
 		if (pobjs == null && createIfNotFound) {
 			pobjs = new PoolableObjects<V, K>().initialize(key, this);

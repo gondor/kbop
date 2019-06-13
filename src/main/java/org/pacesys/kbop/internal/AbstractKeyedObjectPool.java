@@ -1,6 +1,5 @@
 package org.pacesys.kbop.internal;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,11 +28,11 @@ import org.pacesys.kbop.PoolKey;
  */
 public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, K>> implements IKeyedObjectPool<K, V> {
 
-	protected final Lock lock;
-	protected final ConcurrentMap<PoolKey<K>,E> pool;
-	protected final Set<E> borrowed;
-	protected final LinkedList<PoolWaitFuture<E>> waiting;
-	protected IPoolObjectFactory<K, V> factory;
+	final Lock lock;
+	final ConcurrentMap<PoolKey<K>,E> pool;
+	final Set<E> borrowed;
+	final LinkedList<PoolWaitFuture<E>> waiting;
+	final IPoolObjectFactory<K, V> factory;
 	private volatile boolean isShutDown;
 
 
@@ -54,7 +53,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 * @param key the PoolKey
 	 * @return the Poolable Object
 	 */
-	protected E create(PoolKey<K> key) {
+	E create(PoolKey<K> key) {
 		throw new IllegalStateException("Method not implemented"); 
 	}
 
@@ -78,7 +77,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IPooledObject<V, K> borrow(K key, long timeout, TimeUnit unit) throws TimeoutException, Exception {
+	public IPooledObject<V, K> borrow(K key, long timeout, TimeUnit unit) throws Exception {
 		return createFuture(PoolKey.lookup(key)).get(timeout, unit);
 	}
 
@@ -87,9 +86,9 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 * @param key the Pool Key
 	 * @return PoolWaitFuture
 	 */
-	protected PoolWaitFuture<E> createFuture(final PoolKey<K> key) {
+	private PoolWaitFuture<E> createFuture(final PoolKey<K> key) {
 		return new PoolWaitFuture<E>(lock) {
-			protected E getPoolObject(long timeout, TimeUnit unit) throws IOException, InterruptedException, TimeoutException {
+			protected E getPoolObject(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
 				return getBlockingUntilAvailableOrTimeout(key, timeout, unit, this);
 			}
 		};
@@ -144,7 +143,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 * @throws IllegalStateException if the pool has been shutdown
 	 * @throws TimeoutException if the wait timed out
 	 */
-	E getBlockingUntilAvailableOrTimeout(final PoolKey<K> key, final long timeout, final TimeUnit unit, final PoolWaitFuture<E> future) throws InterruptedException, TimeoutException {
+	private E getBlockingUntilAvailableOrTimeout(final PoolKey<K> key, final long timeout, final TimeUnit unit, final PoolWaitFuture<E> future) throws InterruptedException, TimeoutException {
 
 		Date deadline = null;
 		if (timeout > 0) {
@@ -153,7 +152,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 		lock.lock();
 		try
 		{
-			E entry = null;
+			E entry;
 			for(;;) 
 			{
 				validateShutdown();
@@ -183,8 +182,8 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 * @param key the Pool lookup key
 	 * @return Entry if available
 	 */
-	protected E createOrAttemptToBorrow(final PoolKey<K> key) {
-		E entry = null;
+	E createOrAttemptToBorrow(final PoolKey<K> key) {
+		E entry;
 		if (!pool.containsKey(key))
 		{
 			entry = create(key).initialize(key, this);
@@ -215,7 +214,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 * @return true if
 	 * @throws InterruptedException the interrupted exception
 	 */
-	protected boolean await(final PoolWaitFuture<E> future, final PoolKey<K> key, @Nullable Date deadline) throws InterruptedException {
+	boolean await(final PoolWaitFuture<E> future, final PoolKey<K> key, @Nullable Date deadline) throws InterruptedException {
 		try
 		{
 			waiting.add(future);
@@ -229,17 +228,9 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	/**
 	 * Validates the shutdown state. If true then a IllegalStateException is thrown
 	 */
-	protected void validateShutdown() {
+	private void validateShutdown() {
 		if (isShutdown())
 			throw new IllegalStateException("Pool has been shutdown");
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void clear(K key) {
-
 	}
 
 	/**

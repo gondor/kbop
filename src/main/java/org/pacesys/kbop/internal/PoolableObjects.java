@@ -14,11 +14,11 @@ import org.pacesys.kbop.IPooledObject;
  * @param <K> The pool key type
  * @author Jeremy Unruh
  */
-public class PoolableObjects<V, K> extends PoolableObject<V, K> {
+class PoolableObjects<V, K> extends PoolableObject<V, K> {
 
-	protected final Set<PoolableObject<V, K>> borrowed;
-	protected final LinkedList<PoolableObject<V, K>> available;
-	protected final LinkedList<PoolWaitFuture<PoolableObject<V, K>>> waiting;
+	final Set<PoolableObject<V, K>> borrowed;
+	private final LinkedList<PoolableObject<V, K>> available;
+	final LinkedList<PoolWaitFuture<PoolableObject<V, K>>> waiting;
 
 	/**
 	 * Instantiates a new poolable objects.
@@ -125,6 +125,7 @@ public class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	void shutdown() {
 		available.clear();
 		waiting.clear();
-		available.clear();
+		//noinspection RedundantOperationOnEmptyContainer
+		available.clear(); // FIXME is this intentional?
 	}
 }
