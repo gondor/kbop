@@ -1,5 +1,7 @@
 package org.pacesys.kbop;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
@@ -110,6 +112,7 @@ public class PoolMetrics<K> implements Serializable {
 		 * @return Key Metric if this is a Multi Object Pool and the Key exists otherwise null
 		 * @see #hasMetricsForKey(PoolKey)
 		 */
+		@Nullable
 		public KeyMetric getKeyMetrics(K key) {
 			if (keyMetrics != null)
 				return keyMetrics.get(PoolKey.lookup(key));

@@ -1,5 +1,6 @@
 package org.pacesys.kbop.internal;
 
+import org.jetbrains.annotations.Nullable;
 import org.pacesys.kbop.IKeyedObjectPool;
 import org.pacesys.kbop.IPooledObject;
 import org.pacesys.kbop.PoolKey;
@@ -24,7 +25,7 @@ public class PoolableObject<V> implements IPooledObject<V> {
 	 *
 	 * @param object the object
 	 */
-	public PoolableObject(V object) {
+	public PoolableObject(@Nullable V object) {
 		this.object = object;
 		this.created = System.currentTimeMillis();
 	}

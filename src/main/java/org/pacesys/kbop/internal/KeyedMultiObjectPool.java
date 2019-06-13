@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.pacesys.kbop.IKeyedObjectPool;
 import org.pacesys.kbop.IPoolObjectFactory;
 import org.pacesys.kbop.IPooledObject;
@@ -80,6 +81,7 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 
 
 	@Override
+	@Nullable
 	protected PoolableObject<V> createOrAttemptToBorrow(PoolKey<K> key) {
 
 		PoolableObjects<V> pobjs = objectPool(key);
@@ -104,7 +106,7 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean await(final PoolWaitFuture<PoolableObject<V>> future, final PoolKey<K> key, Date deadline) throws InterruptedException {
+	protected boolean await(final PoolWaitFuture<PoolableObject<V>> future, final PoolKey<K> key, @Nullable Date deadline) throws InterruptedException {
 		PoolableObjects<V> pobjs = objectPool(key);
 		try
 		{

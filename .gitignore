@@ -14,3 +14,5 @@ test-output
 target
 release.properties
 .settings
+/kbop.iml
+/.idea

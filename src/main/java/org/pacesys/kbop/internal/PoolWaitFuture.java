@@ -1,5 +1,7 @@
 package org.pacesys.kbop.internal;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
@@ -121,7 +123,7 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
    * @return true, if successful
    * @throws InterruptedException the interrupted exception
    */
-  public boolean await(final Date deadline) throws InterruptedException {
+  public boolean await(@Nullable final Date deadline) throws InterruptedException {
 	this.lock.lock();
 	try {
 	  if (this.cancelled) {

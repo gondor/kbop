@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.pacesys.kbop.IPooledObject;
 
 /**
@@ -50,6 +51,7 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 *
 	 * @return Poolable Object or null if we couldn't allocate
 	 */
+	@Nullable
 	public PoolableObject<V> getFree() {
 		if (!borrowed.isEmpty()) {
 			for (PoolableObject<V> bo : borrowed) {
@@ -111,6 +113,7 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 *
 	 * @return the future who has been waiting or null if no waiters
 	 */
+	@Nullable
 	public PoolWaitFuture<PoolableObject<V>> nextWaiting() {
 		return waiting.poll();
 	}

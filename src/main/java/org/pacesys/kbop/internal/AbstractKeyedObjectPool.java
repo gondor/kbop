@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jetbrains.annotations.Nullable;
 import org.pacesys.kbop.IKeyedObjectPool;
 import org.pacesys.kbop.IPoolObjectFactory;
 import org.pacesys.kbop.IPooledObject;
@@ -214,7 +215,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 	 * @return true if
 	 * @throws InterruptedException the interrupted exception
 	 */
-	protected boolean await(final PoolWaitFuture<E> future, final PoolKey<K> key, Date deadline) throws InterruptedException {
+	protected boolean await(final PoolWaitFuture<E> future, final PoolKey<K> key, @Nullable Date deadline) throws InterruptedException {
 		try
 		{
 			waiting.add(future);
