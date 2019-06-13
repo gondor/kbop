@@ -178,6 +178,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 *
 	 * @return Entry if available
 	 */
+	@Nullable
 	E createOrAttemptToBorrow(final PoolKey<K> key) {
 		E entry;
 		if (!pool.containsKey(key)) {

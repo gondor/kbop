@@ -41,7 +41,9 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 						obj.release();
 						fail("Object was obtained");
 					} catch (Exception e) {
-						assertThat(e instanceof TimeoutException).isTrue();
+						if (!(e instanceof TimeoutException)) {
+							fail(e.getMessage(), e);
+						}
 					}
 				}
 				
@@ -71,7 +73,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 					Thread.sleep(20);
 					assertThat(pool().borrow(POOL_KEY)).isNotNull();
 				} catch (Exception e) {
-					fail("Failed to obtain Object: " + Thread.currentThread().getName());
+					fail("Failed to obtain Object: " + Thread.currentThread().getName(), e);
 				} finally {
 					if (obj != null)
 						obj.release();
@@ -126,7 +128,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 		} catch (IllegalStateException e) {
 			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail(e.getMessage(), e);
 		}
 	}
 	

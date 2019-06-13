@@ -86,7 +86,7 @@ public class KeyedMultiObjectPoolTest extends
 		assertThat(metrics.getKeyCount()).isEqualTo(2);
 	}
 	
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testShutdown() {
 		testPoolSizes();
 		
@@ -94,9 +94,9 @@ public class KeyedMultiObjectPoolTest extends
 		try {
 			pool().borrow(POOL_KEY);
 		} catch (IllegalStateException e) {
-			throw e;
+			// OK
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail(e.getMessage(), e);
 		}
 	}
 	
@@ -121,7 +121,7 @@ public class KeyedMultiObjectPoolTest extends
 			try {
 				t.join();
 			} catch (InterruptedException e) {
-				throw new RuntimeException(e.getMessage());
+				throw new RuntimeException(e.getMessage(), e);
 			}
 		}
 	}
@@ -140,7 +140,7 @@ public class KeyedMultiObjectPoolTest extends
 			context.validate(obj);
 		} catch (TimeoutException e) {
 			if (context.failIfUnableToBorrow)
-				fail("Unable to borrow object : " + e.getMessage());
+				fail("Unable to borrow object : " + e.getMessage(), e);
 			else
 				assertThat(pool().getPoolMetrics().getKeyMetrics(key)
 						.getBorrowedCount() == MAX_ITEMS_PER_KEY).isTrue();
