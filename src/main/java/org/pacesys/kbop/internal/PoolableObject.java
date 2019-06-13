@@ -60,10 +60,8 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	
 	/**
 	 * Releases the current owning thread from this Object
-	 *
-	 * @param <E> the Entry type
 	 */
-	<E extends PoolableObject<V, K>> void releaseOwner() {
+	void releaseOwner() {
 		this.owner = null;
 	}
 	
