@@ -100,7 +100,7 @@ public class KeyedMultiObjectPoolTest extends
 	
 	private Set<Thread> createThreadedExecution(final String key,
 												int threadCount, final ExecutionContext context) {
-		Set<Thread> threads = new HashSet<Thread>(threadCount);
+		Set<Thread> threads = new HashSet<>(threadCount);
 		for (int i = 0; i < threadCount; i++) {
 			threads.add(new Thread(new Runnable() {
 				public void run() {
@@ -125,12 +125,12 @@ public class KeyedMultiObjectPoolTest extends
 	}
 	
 	private void validateBorrowFromPool(String key, ExecutionContext context) {
-		IPooledObject<String> obj = null;
+		IPooledObject<String, String> obj = null;
 		try {
 			obj = pool().borrow(key, context.maxWaitTime, TimeUnit.MILLISECONDS);
 			Thread.sleep(context.sleepTime);
 			if (context.verifyCanGetSameInstance) {
-				IPooledObject<String> obj2 = pool().borrow(key, context.maxWaitTime,
+				IPooledObject<String, String> obj2 = pool().borrow(key, context.maxWaitTime,
 						TimeUnit.MILLISECONDS);
 				assertThat(obj.equals(obj2)).isTrue();
 			}

@@ -37,7 +37,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * @throws IllegalStateException if the Pool has been shutdown
 	 * @throws Exception  if the thread was interrupted or an error occurred during the creation of a new Object which didn't exist in the Pool.
 	 */
-	IPooledObject<V> borrow(K key) throws Exception;
+	IPooledObject<V, K> borrow(K key) throws Exception;
 
 	/**
 	 * Attempts to borrow an Object from the Pool with the given Key.  Please note that upon successful retrieval of the borrowed object it is
@@ -56,14 +56,14 @@ public interface IKeyedObjectPool<K, V> {
 	 * @throws IllegalStateException if the Pool has been shutdown
 	 * @throws Exception if the thread was interrupted or an error occurred during the creation of a new Object which didn't exist in the Pool.
 	 */
-	IPooledObject<V> borrow(K key, long timeout, TimeUnit unit) throws TimeoutException, Exception;
+	IPooledObject<V, K> borrow(K key, long timeout, TimeUnit unit) throws TimeoutException, Exception;
 
 	/**
 	 * Releases the Borrowed Object back into the Pool and makes it available for borrowing
 	 *
 	 * @param borrowedObject the object to release
 	 */
-	void release(IPooledObject<V> borrowedObject);
+	void release(IPooledObject<V, K> borrowedObject);
 
 	/**
 	 * Releases the object from the pool and removes it.  If the key associated with this object no longer has available object(s)
@@ -71,7 +71,7 @@ public interface IKeyedObjectPool<K, V> {
 	 * 
 	 * @param borrowedObject the object to release and invalidate
 	 */
-	void invalidate(IPooledObject<V> borrowedObject);
+	void invalidate(IPooledObject<V, K> borrowedObject);
 
 	/**
 	 * Clears the specified pool, removing all pooled instances corresponding to the given key.  Depending on the underlying Pool Implementation this

@@ -13,7 +13,7 @@ import org.pacesys.kbop.PoolMetrics;
  * 
  * @author Jeremy Unruh
  */
-public class KeyedSingleObjectPool<K,V> extends AbstractKeyedObjectPool<K, V, PoolableObject<V>> implements IKeyedObjectPool.Single<K, V> {
+public class KeyedSingleObjectPool<K,V> extends AbstractKeyedObjectPool<K, V, PoolableObject<V, K>> implements IKeyedObjectPool.Single<K, V> {
 
 	public KeyedSingleObjectPool(IPoolObjectFactory<K, V> factory) {
 		super(factory);
@@ -23,8 +23,8 @@ public class KeyedSingleObjectPool<K,V> extends AbstractKeyedObjectPool<K, V, Po
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PoolableObject<V> create(PoolKey<K> key) {
-		return new PoolableObject<V>(factory.create(key));
+	protected PoolableObject<V, K> create(PoolKey<K> key) {
+		return new PoolableObject<>(factory.create(key));
 	}
 
 	/**
@@ -32,7 +32,7 @@ public class KeyedSingleObjectPool<K,V> extends AbstractKeyedObjectPool<K, V, Po
 	 */
 	@Override
 	public PoolMetrics<K> getPoolMetrics() {
-		return new PoolMetrics<K>(this.borrowed.size(), this.waiting.size(), 1, pool.keySet().size());
+		return new PoolMetrics<>(this.borrowed.size(), this.waiting.size(), 1, pool.keySet().size());
 	}
 
 	/**

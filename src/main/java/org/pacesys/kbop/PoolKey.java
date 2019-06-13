@@ -29,7 +29,7 @@ public class PoolKey<K> implements Cloneable, Serializable {
   public static <K> PoolKey<K> lookup(K key) {
 	if (key == null) 
 	  throw new IllegalStateException("Key must not be null");
-	return new PoolKey<K>(key);
+	return new PoolKey<>(key);
   }
 
   /**

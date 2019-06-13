@@ -30,13 +30,13 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 	public void waitForObjectWithTimeoutTest() throws Exception {
 		singleBorrowAndRelease();
 		
-		IPooledObject<String> obj = pool().borrow(POOL_KEY);
+		IPooledObject<String, String> obj = pool().borrow(POOL_KEY);
 		try {
 			ExecutorService es = Executors.newSingleThreadExecutor();
 			Future<?> f = es.submit(new Runnable() {
 				public void run() {
 					try {
-						IPooledObject<String> obj = pool().borrow(POOL_KEY, 500,
+						IPooledObject<String, String> obj = pool().borrow(POOL_KEY, 500,
 								TimeUnit.MILLISECONDS);
 						obj.release();
 						fail("Object was obtained");
@@ -64,7 +64,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 		
 		Runnable r = new Runnable() {
 			public void run() {
-				IPooledObject<String> obj = null;
+				IPooledObject<String, String> obj = null;
 				try {
 					obj = pool().borrow(POOL_KEY);
 					assertThat(obj).isNotNull();
@@ -88,7 +88,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 
 	@Test
 	public void singleBorrowAndRelease() throws Exception {
-		IPooledObject<String> obj = pool().borrow(POOL_KEY);
+		IPooledObject<String, String> obj = pool().borrow(POOL_KEY);
 		assertThat(obj).isNotNull();
 		pool().release(obj);
 		verifyMetrics();
@@ -139,7 +139,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 		TestLifecycleFactory factory = new TestLifecycleFactory();
 		IKeyedObjectPool<String, Boolean> pool = Pools.createPool(factory);
 
-		IPooledObject<Boolean> obj = pool.borrow(POOL_KEY);
+		IPooledObject<Boolean, String> obj = pool.borrow(POOL_KEY);
 		obj.release();
 		obj = pool.borrow(POOL_KEY);
 		obj.invalidate();

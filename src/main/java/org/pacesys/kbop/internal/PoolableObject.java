@@ -9,15 +9,16 @@ import org.pacesys.kbop.PoolKey;
  * Internal Implementation of IPooledObject which holds onto the internal Object V, Key and Pool which created this Object
  * 
  * @param <V> the value type
+ * @param <K> the pool key type
  * @author Jeremy Unruh
  */
-public class PoolableObject<V> implements IPooledObject<V> {
+public class PoolableObject<V, K> implements IPooledObject<V, K> {
 
 	private long created;
 	private long expiry;
 	private V object;
-	private PoolKey<?> key;
-	private IKeyedObjectPool<?, V> pool;
+	private PoolKey<K> key;
+	private IKeyedObjectPool<K, V> pool;
 	private Thread owner;
 
 	/**
@@ -33,14 +34,13 @@ public class PoolableObject<V> implements IPooledObject<V> {
 	/**
 	 * Initializes this Object when initially created by the Pool for allocation
 	 *
-	 * @param <K> The Key wrapped Type
 	 * @param <E> the Entry Type
 	 * @param key The Key which is associated with this Pool Object
 	 * @param pool the pool creating this allocation
 	 * @return Poolable Object
 	 */
 	@SuppressWarnings("unchecked")
-	<K, E extends PoolableObject<V>> E initialize(PoolKey<K> key, IKeyedObjectPool<?, V> pool) {
+	<E extends PoolableObject<V, K>> E initialize(PoolKey<K> key, IKeyedObjectPool<K, V> pool) {
 		this.key = key;
 		this.pool = pool;
 		return (E) this;
@@ -49,12 +49,11 @@ public class PoolableObject<V> implements IPooledObject<V> {
 	/**
 	 * Flags the current thread as the new Owner of this Object
 	 *
-	 * @param <K> the Key wrapped Type
 	 * @param <E> the Entry Type
 	 * @return PoolableObject for method chaining
 	 */
 	@SuppressWarnings("unchecked")
-	<K, E extends PoolableObject<V>> E flagOwner() {
+	<E extends PoolableObject<V, K>> E flagOwner() {
 		this.owner = Thread.currentThread();
 		return (E) this;
 	}
@@ -62,12 +61,11 @@ public class PoolableObject<V> implements IPooledObject<V> {
 	/**
 	 * Releases the current owning thread from this Object
 	 *
-	 * @param <K> the Key wrapped Type
 	 * @param <E> the Entry type
 	 * @return PoolableObject for method chaining
 	 */
 	@SuppressWarnings("unchecked")
-	<K, E extends PoolableObject<V>> E releaseOwner() {
+	<E extends PoolableObject<V, K>> E releaseOwner() {
 		this.owner = null;
 		return (E) this;
 	}
@@ -84,10 +82,9 @@ public class PoolableObject<V> implements IPooledObject<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public <K> PoolKey<K> getKey() {
-		return (PoolKey<K>) key;
+	public PoolKey<K> getKey() {
+		return key;
 	}
 
 	/**
@@ -149,10 +146,8 @@ public class PoolableObject<V> implements IPooledObject<V> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public <K> K getUserKey() {
-		return (K) getKey().get();
+	public K getUserKey() {
+		return getKey().get();
 	}
-
 }

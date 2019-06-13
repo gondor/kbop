@@ -16,7 +16,7 @@ public class Pools {
    * @return IKeyedObjectPool
    */
   public static <K, T> IKeyedObjectPool.Single<K, T> createPool(IPoolObjectFactory<K, T> factory) {
-	return new KeyedSingleObjectPool<K, T>(factory);
+	return new KeyedSingleObjectPool<>(factory);
   }
 
   /**
@@ -27,7 +27,7 @@ public class Pools {
    * @return IKeyedObjectPool
    */
   public static <K, T> IKeyedObjectPool.Multi<K, T> createMultiPool(IPoolObjectFactory<K, T> factory, int maxItemsPerKey) {
-	  return new KeyedMultiObjectPool<K, T>(factory, maxItemsPerKey);
+	  return new KeyedMultiObjectPool<>(factory, maxItemsPerKey);
 
   }
 }

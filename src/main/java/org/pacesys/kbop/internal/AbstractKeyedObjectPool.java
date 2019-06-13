@@ -27,7 +27,7 @@ import org.pacesys.kbop.PoolKey;
  * @param <E> the pool object holder containing the pooled object
  * @author Jeremy Unruh
  */
-public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>> implements IKeyedObjectPool<K, V> {
+public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, K>> implements IKeyedObjectPool<K, V> {
 
 	protected final Lock lock;
 	protected final ConcurrentMap<PoolKey<K>,E> pool;
@@ -42,9 +42,9 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 	 */
 	public AbstractKeyedObjectPool(IPoolObjectFactory<K, V> factory) {
 		this.lock = new ReentrantLock();
-		this.waiting = new LinkedList<PoolWaitFuture<E>>();
-		this.borrowed = new HashSet<E>();
-		this.pool = new ConcurrentHashMap<PoolKey<K>, E>();
+		this.waiting = new LinkedList<>();
+		this.borrowed = new HashSet<>();
+		this.pool = new ConcurrentHashMap<>();
 		this.factory = factory;
 	}
 
@@ -70,7 +70,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IPooledObject<V> borrow(K key) throws Exception {
+	public IPooledObject<V, K> borrow(K key) throws Exception {
 		return createFuture(PoolKey.lookup(key)).get();
 	}
 
@@ -78,7 +78,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IPooledObject<V> borrow(K key, long timeout, TimeUnit unit) throws TimeoutException, Exception {
+	public IPooledObject<V, K> borrow(K key, long timeout, TimeUnit unit) throws TimeoutException, Exception {
 		return createFuture(PoolKey.lookup(key)).get(timeout, unit);
 	}
 
@@ -99,15 +99,15 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void release(IPooledObject<V> borrowedObject) {
+	public void release(IPooledObject<V, K> borrowedObject) {
 		release(borrowedObject, Boolean.TRUE);
 	}
 
-	protected void release(IPooledObject<V> borrowedObject, boolean reusable) {
+	protected void release(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		lock.lock();
 		if (borrowed.remove(borrowedObject))
 		{
-			((PoolableObject<V>)borrowedObject).releaseOwner();
+			((PoolableObject<V, K>)borrowedObject).releaseOwner();
 			if (!reusable)
 			{
 				factory.destroy(borrowedObject.get());
@@ -128,7 +128,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void invalidate(IPooledObject<V> borrowedObject) {
+	public void invalidate(IPooledObject<V, K> borrowedObject) {
 		release(borrowedObject, Boolean.FALSE);
 	}
 

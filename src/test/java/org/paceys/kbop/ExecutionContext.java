@@ -14,7 +14,7 @@ public class ExecutionContext {
 
 	public interface PostValidation {
 
-		<V> void validate(IPooledObject<V> borrowedObject);
+		<V, K> void validate(IPooledObject<V, K> borrowedObject);
 	}
 
 	/** Max time to block waiting for an Object in Milliseconds */
@@ -133,7 +133,7 @@ public class ExecutionContext {
 		return this;
 	}
 
-	public <V> void validate(IPooledObject<V> borrowedObject) {
+	public <V, K> void validate(IPooledObject<V, K> borrowedObject) {
 		if (validator != null)
 			validator.validate(borrowedObject);
 	}

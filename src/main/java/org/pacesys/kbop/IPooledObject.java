@@ -4,9 +4,10 @@ package org.pacesys.kbop;
  * A Object Pool Entry which wraps the underlying borrowed Object as V.  
  * 
  * @param <V> the value type
+ * @param <K> the pool key type
  * @author Jeremy Unruh
  */
-public interface IPooledObject<V> {
+public interface IPooledObject<V, K> {
 
   /**
    * The borrowed object this Pooled Object is associated with
@@ -37,11 +38,10 @@ public interface IPooledObject<V> {
    * The Key which is associated with this Pool Object
    * @return the Pool Key
    */
-  <K> PoolKey<K> getKey();
+  PoolKey<K> getKey();
   
   /**
    * @return the user inner key
    */
-  <K> K getUserKey();
-
+  K getUserKey();
 }

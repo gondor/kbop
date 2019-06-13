@@ -11,22 +11,23 @@ import org.pacesys.kbop.IPooledObject;
  * Defines an Key Object Pool which supports multiple objects available for leasing/acquiring
  * 
  * @param <V> Contained Object Type
+ * @param <K> The pool key type
  * @author Jeremy Unruh
  */
-public class PoolableObjects<V> extends PoolableObject<V> {
+public class PoolableObjects<V, K> extends PoolableObject<V, K> {
 
-	protected final Set<PoolableObject<V>> borrowed;
-	protected final LinkedList<PoolableObject<V>> available;
-	protected final LinkedList<PoolWaitFuture<PoolableObject<V>>> waiting;
+	protected final Set<PoolableObject<V, K>> borrowed;
+	protected final LinkedList<PoolableObject<V, K>> available;
+	protected final LinkedList<PoolWaitFuture<PoolableObject<V, K>>> waiting;
 
 	/**
 	 * Instantiates a new poolable objects.
 	 */
 	public PoolableObjects() {
 		super(null);
-		this.borrowed = new HashSet<PoolableObject<V>>();
-		this.available = new LinkedList<PoolableObject<V>>();
-		this.waiting = new LinkedList<PoolWaitFuture<PoolableObject<V>>>();
+		this.borrowed = new HashSet<>();
+		this.available = new LinkedList<>();
+		this.waiting = new LinkedList<>();
 	}
 
 	/**
@@ -35,14 +36,14 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 * @param borrowedObject the borrowed object to free
 	 * @param reusable true if the object can be recycled and used for future allocations
 	 */
-	public void free(IPooledObject<V> borrowedObject, boolean reusable) {
+	public void free(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		if (borrowedObject == null) return;
 
 		if (borrowed.remove(borrowedObject))
 		{
-			((PoolableObject<V>)borrowedObject).releaseOwner();
+			((PoolableObject<V, K>)borrowedObject).releaseOwner();
 			if (reusable)
-				available.addFirst((PoolableObject<V>)borrowedObject);
+				available.addFirst((PoolableObject<V, K>)borrowedObject);
 		}
 	}
 
@@ -52,15 +53,15 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 * @return Poolable Object or null if we couldn't allocate
 	 */
 	@Nullable
-	public PoolableObject<V> getFree() {
+	public PoolableObject<V, K> getFree() {
 		if (!borrowed.isEmpty()) {
-			for (PoolableObject<V> bo : borrowed) {
+			for (PoolableObject<V, K> bo : borrowed) {
 				if (bo.isCurrentOwner())
 					return bo;
 			}
 		}
 		if (!available.isEmpty()) {
-			PoolableObject<V> obj = available.remove();
+			PoolableObject<V, K> obj = available.remove();
 			borrowed.add(obj);
 			return obj;
 		}
@@ -73,7 +74,7 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 * @param entry the entry
 	 * @return the poolable object
 	 */
-	public PoolableObject<V> add(final PoolableObject<V> entry) {
+	public PoolableObject<V, K> add(final PoolableObject<V, K> entry) {
 		borrowed.add(entry);
 		return entry;
 	}
@@ -83,7 +84,7 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 *
 	 * @param future the future who is waiting to borrow from this pool
 	 */
-	public void queue(final PoolWaitFuture<PoolableObject<V>> future) {
+	public void queue(final PoolWaitFuture<PoolableObject<V, K>> future) {
 		if (future == null) return;
 		waiting.add(future);
 	}
@@ -93,7 +94,7 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 *
 	 * @param future the future
 	 */
-	public void unqueue(final PoolWaitFuture<PoolableObject<V>> future) {
+	public void unqueue(final PoolWaitFuture<PoolableObject<V, K>> future) {
 		if (future == null) return;
 		waiting.remove(future);
 	}
@@ -114,7 +115,7 @@ public class PoolableObjects<V> extends PoolableObject<V> {
 	 * @return the future who has been waiting or null if no waiters
 	 */
 	@Nullable
-	public PoolWaitFuture<PoolableObject<V>> nextWaiting() {
+	public PoolWaitFuture<PoolableObject<V, K>> nextWaiting() {
 		return waiting.poll();
 	}
 
