@@ -9,12 +9,12 @@ import org.pacesys.kbop.Pools;
  * Abstract Test Case for Pooled Objects
  */
 public abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String>> {
-
+	
 	static String POOL_KEY = "TestKey";
 	static String POOL_KEY2 = "TestKey2";
-
+	
 	private P pool;
-
+	
 	@SuppressWarnings("unchecked")
 	public AbstractPoolTest(int maxItemsPerKey) {
 		super();
@@ -22,15 +22,15 @@ public abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String
 			public String create(PoolKey<String> key) {
 				return "This is a Test : " + key.getKey();
 			}
-
+			
 			@Override
 			public void activate(String object) {
 			}
-
+			
 			@Override
 			public void passivate(String object) {
 			}
-
+			
 			@Override
 			public void destroy(String object) {
 			}
@@ -38,9 +38,9 @@ public abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String
 		this.pool = (P) ((maxItemsPerKey > 1) ? Pools.createMultiPool(factory,
 				maxItemsPerKey) : Pools.createPool(factory));
 	}
-
+	
 	P pool() {
 		return pool;
 	}
-
+	
 }

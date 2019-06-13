@@ -10,9 +10,10 @@ import java.util.Map;
 /**
  * Provides a metrics snapshot for a Pool
  */
-@NonFinal@Value
+@NonFinal
+@Value
 public class PoolMetrics {
-
+	
 	private final int borrowedCount;
 	private final int waitingCount;
 	private final int maxObjectsPerKey;
@@ -23,17 +24,17 @@ public class PoolMetrics {
 	 * Extends Pool Metrics providing extended Per-Key metrics
 	 */
 	public static class PoolMultiMetrics<K> extends PoolMetrics {
-
+		
 		private final Map<PoolKey<K>, KeyMetric> keyMetrics;
-
+		
 		public PoolMultiMetrics(int borrowedCount, int waitingCount, int maxObjectsPerKey, Map<PoolKey<K>, KeyMetric> keyMetrics) {
 			super(borrowedCount, waitingCount, maxObjectsPerKey, keyMetrics.size());
 			this.keyMetrics = keyMetrics;
 		}
-
+		
 		/**
-		 * Only Object Pools with a maxItemsPerKey > 1 will populate Key Metrics.  Single Key to Object Pools do not populate this call
-		 * so null is returned.
+		 * Only Object Pools with a maxItemsPerKey > 1 will populate Key Metrics.  Single Key to Object Pools do not populate this call so null is returned.
+		 *
 		 * @return Key Metric if this is a Multi Object Pool and the Key exists otherwise null
 		 * @see #hasMetricsForKey(Object)
 		 */
@@ -43,18 +44,20 @@ public class PoolMetrics {
 				return keyMetrics.get(new PoolKey<>(key));
 			return null;
 		}
-
+		
 		/**
 		 * Determines if metrics have been populated for the specified Key
+		 *
 		 * @param key the Pool Key to query metrics for
+		 *
 		 * @return true if metrics are available for the given {@code key}
 		 */
 		public boolean hasMetricsForKey(K key) {
 			return keyMetrics != null && keyMetrics.containsKey(new PoolKey<>(key));
 		}
-
+		
 	}
-
+	
 	@Value
 	public static class KeyMetric {
 		private final int allocationSize;

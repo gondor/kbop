@@ -1,24 +1,24 @@
 package org.pacesys.kbop.internal;
 
+import org.jetbrains.annotations.Nullable;
+import org.pacesys.kbop.IPooledObject;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
-import org.pacesys.kbop.IPooledObject;
-
 /**
  * Defines an Key Object Pool which supports multiple objects available for leasing/acquiring
- * 
+ *
  * @param <V> Contained Object Type
  * @param <K> The pool key type
  */
 class PoolableObjects<V, K> extends PoolableObject<V, K> {
-
+	
 	final Set<PoolableObject<V, K>> borrowed;
 	private final LinkedList<PoolableObject<V, K>> available;
 	final LinkedList<PoolWaitFuture<PoolableObject<V, K>>> waiting;
-
+	
 	/**
 	 * Instantiates a new poolable objects.
 	 */
@@ -28,12 +28,12 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 		this.available = new LinkedList<>();
 		this.waiting = new LinkedList<>();
 	}
-
+	
 	/**
 	 * Frees the borrowed object from the internal Pool
 	 *
 	 * @param borrowedObject the borrowed object to free
-	 * @param reusable true if the object can be recycled and used for future allocations
+	 * @param reusable       true if the object can be recycled and used for future allocations
 	 */
 	public void free(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		if (borrowedObject == null) return;
@@ -41,12 +41,12 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 		final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
 		if (borrowed.remove(borrowedVK))
 		{
-			((PoolableObject<V, K>)borrowedObject).releaseOwner();
+			((PoolableObject<V, K>) borrowedObject).releaseOwner();
 			if (reusable)
-				available.addFirst((PoolableObject<V, K>)borrowedObject);
+				available.addFirst((PoolableObject<V, K>) borrowedObject);
 		}
 	}
-
+	
 	/**
 	 * Finds an available Poolable Object to borrow
 	 *
@@ -67,18 +67,19 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Adds the Poolable Object to the borrowed list
 	 *
 	 * @param entry the entry
+	 *
 	 * @return the poolable object
 	 */
 	public PoolableObject<V, K> add(final PoolableObject<V, K> entry) {
 		borrowed.add(entry);
 		return entry;
 	}
-
+	
 	/**
 	 * Queues the {@code future} into the waiting list
 	 *
@@ -88,7 +89,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 		if (future == null) return;
 		waiting.add(future);
 	}
-
+	
 	/**
 	 * Removes the specified {@code future} from the current waiting queue
 	 *
@@ -98,8 +99,8 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 		if (future == null) return;
 		waiting.remove(future);
 	}
-
-
+	
+	
 	/**
 	 * Gets the allocation size.
 	 *
@@ -108,7 +109,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	public int getAllocationSize() {
 		return available.size() + borrowed.size();
 	}
-
+	
 	/**
 	 * Finds the next Future who is waiting to borrow from this pool or null
 	 *
@@ -118,7 +119,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	public PoolWaitFuture<PoolableObject<V, K>> nextWaiting() {
 		return waiting.poll();
 	}
-
+	
 	/**
 	 * Cleans up current resources
 	 */

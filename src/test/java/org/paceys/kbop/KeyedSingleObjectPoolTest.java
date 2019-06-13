@@ -18,14 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool.Single<String, String>> {
-
+	
 	/**
 	 * Instantiates a new keyed single object pool test.
 	 */
 	public KeyedSingleObjectPoolTest() {
 		super(1);
 	}
-
+	
 	@Test
 	public void waitForObjectWithTimeoutTest() throws Exception {
 		singleBorrowAndRelease();
@@ -44,20 +44,20 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 						assertThat(e instanceof TimeoutException).isTrue();
 					}
 				}
-
+				
 			});
-
+			
 			// Test that the main thread can still acquire the object since it owns
 			// the contract and hasn't releasd it yet
 			assertThat(pool().borrow(POOL_KEY)).isNotNull();
-
+			
 			// block until thread is done
 			f.get();
 		} finally {
 			obj.release();
 		}
 	}
-
+	
 	@Test
 	public void manyThreadsBlockingUntilObtained() throws Exception {
 		waitForObjectWithTimeoutTest();
@@ -85,7 +85,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 		es.awaitTermination(2, TimeUnit.SECONDS);
 		verifyMetrics();
 	}
-
+	
 	@Test
 	public void singleBorrowAndRelease() throws Exception {
 		IPooledObject<String, String> obj = pool().borrow(POOL_KEY);
@@ -112,7 +112,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 		assertThat(metrics.getWaitingCount()).isZero();
 		assertThat(metrics.getKeyCount()).isEqualTo(1);
 	}
-
+	
 	/**
 	 * Tests shutting down the pool and not allowing any more allocations
 	 */
@@ -129,41 +129,40 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
-	 * Tests the Factory Lifecycle to insure the pool is calling factory during
-	 * each phase within the objects lifecycle
+	 * Tests the Factory Lifecycle to insure the pool is calling factory during each phase within the objects lifecycle
 	 */
 	@Test
 	public void testObjectLifecycle() throws Exception {
 		TestLifecycleFactory factory = new TestLifecycleFactory();
 		IKeyedObjectPool<String, Boolean> pool = Pools.createPool(factory);
-
+		
 		IPooledObject<Boolean, String> obj = pool.borrow(POOL_KEY);
 		obj.release();
 		obj = pool.borrow(POOL_KEY);
 		obj.invalidate();
-
+		
 		assertThat(factory.lifecycleCount).isEqualTo(4);
 	}
-
+	
 	static class TestLifecycleFactory implements
 			IPoolObjectFactory<String, Boolean> {
 		int lifecycleCount;
-
+		
 		public Boolean create(PoolKey<String> key) {
 			lifecycleCount++;
 			return true;
 		}
-
+		
 		public void activate(Boolean object) {
 			lifecycleCount++;
 		}
-
+		
 		public void passivate(Boolean object) {
 			lifecycleCount++;
 		}
-
+		
 		public void destroy(Boolean object) {
 			lifecycleCount++;
 		}

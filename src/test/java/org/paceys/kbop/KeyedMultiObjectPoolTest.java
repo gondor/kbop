@@ -1,14 +1,14 @@
 package org.paceys.kbop;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.junit.Test;
 import org.pacesys.kbop.IKeyedObjectPool;
 import org.pacesys.kbop.IPooledObject;
 import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -45,7 +45,7 @@ public class KeyedMultiObjectPoolTest extends
 		
 		// Run again and invalidate vs release
 		executeAndWait(createThreadedExecution(POOL_KEY, MAX_ITEMS_PER_KEY, ExecutionContext.get().failIfUnableToBorrow(true)
-						.reusableAfterAllocation(false).sleepTime(20)));
+				.reusableAfterAllocation(false).sleepTime(20)));
 		metrics = pool().getPoolMetrics();
 		assertThat(metrics.getKeyMetrics(POOL_KEY).getAllocationSize()).isZero();
 	}

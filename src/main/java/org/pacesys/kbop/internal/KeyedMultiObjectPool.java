@@ -1,9 +1,5 @@
 package org.pacesys.kbop.internal;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jetbrains.annotations.Nullable;
 import org.pacesys.kbop.IKeyedObjectPool;
 import org.pacesys.kbop.IPoolObjectFactory;
@@ -12,16 +8,20 @@ import org.pacesys.kbop.PoolKey;
 import org.pacesys.kbop.PoolMetrics.KeyMetric;
 import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Thread Safe - Single Key to Multiple Object Pool
- * 
+ *
  * @param <K> the key type
  * @param <V> the value type
  */
 public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, PoolableObject<V, K>> implements IKeyedObjectPool.Multi<K, V> {
-
+	
 	private final int maxPerKey;
-
+	
 	/**
 	 * Instantiates a new keyed multi object pool.
 	 *
@@ -35,40 +35,39 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 	protected void release(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		lock.lock();
 		final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
-		if (borrowed.remove(borrowedVK))
-		{
+		if (borrowed.remove(borrowedVK)) {
 			PoolableObjects<V, K> pos = objectPool(borrowedObject.getKey(), Boolean.FALSE);
 			if (pos != null) {
 				if (reusable)
 					factory.passivate(borrowedObject.get());
 				else
 					factory.destroy(borrowedObject.get());
-
+				
 				pos.free(borrowedObject, reusable);
 				
 				notifyWaiting(pos);
 			}
-
+			
 		}
 		lock.unlock();
 	}
-
+	
 	private void notifyWaiting(PoolableObjects<V, K> pooledObjects) {
 		PoolWaitFuture<PoolableObject<V, K>> future = pooledObjects.nextWaiting();
 		if (future != null)
 			waiting.remove(future);
 		else
 			future = waiting.poll();
-
+		
 		if (future != null) {
 			future.wakeup();
 		}
 	}
-
+	
 	private PoolableObjects<V, K> objectPool(PoolKey<K> key) {
 		return objectPool(key, Boolean.TRUE);
 	}
-
+	
 	private PoolableObjects<V, K> objectPool(PoolKey<K> key, boolean createIfNotFound) {
 		PoolableObjects<V, K> pobjs = (PoolableObjects<V, K>) pool.get(key);
 		if (pobjs == null && createIfNotFound) {
@@ -77,21 +76,21 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 		}
 		return pobjs;
 	}
-
-
+	
+	
 	@Override
 	@Nullable
 	protected PoolableObject<V, K> createOrAttemptToBorrow(PoolKey<K> key) {
-
+		
 		PoolableObjects<V, K> pobjs = objectPool(key);
 		PoolableObject<V, K> entry = pobjs.getFree();
-
+		
 		if (entry != null) {
 			borrowed.add(entry);
 			factory.activate(entry.get());
 			return entry;
 		}
-
+		
 		if (pobjs.getAllocationSize() < maxPerKey) {
 			V obj = factory.create(key);
 			entry = pobjs.add(new PoolableObject<V, K>(obj).initialize(key, this).flagOwner());
@@ -100,25 +99,23 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 		}
 		return null;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected boolean await(final PoolWaitFuture<PoolableObject<V, K>> future, final PoolKey<K> key, @Nullable Date deadline) throws InterruptedException {
 		PoolableObjects<V, K> pobjs = objectPool(key);
-		try
-		{
+		try {
 			pobjs.queue(future);
 			waiting.add(future);
 			return future.await(deadline);
-		}
-		finally {
+		} finally {
 			pobjs.unqueue(future);
 			waiting.remove(future);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -133,8 +130,8 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 		}
 		return new PoolMultiMetrics<>(borrowed.size(), waiting.size(), maxPerKey, keyMetrics);
 	}
-
-
+	
+	
 	/**
 	 * {@inheritDoc}
 	 */

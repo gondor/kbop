@@ -7,18 +7,18 @@ import org.pacesys.kbop.PoolKey;
 
 /**
  * Internal Implementation of IPooledObject which holds onto the internal Object V, Key and Pool which created this Object
- * 
+ *
  * @param <V> the value type
  * @param <K> the pool key type
  */
 public class PoolableObject<V, K> implements IPooledObject<V, K> {
-
+	
 	private final long created;
 	private final V object;
 	private PoolKey<K> key;
 	private IKeyedObjectPool<K, V> pool;
 	private Thread owner;
-
+	
 	/**
 	 * Instantiates a new poolable object.
 	 *
@@ -28,13 +28,14 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 		this.object = object;
 		this.created = System.currentTimeMillis();
 	}
-
+	
 	/**
 	 * Initializes this Object when initially created by the Pool for allocation
 	 *
-	 * @param <E> the Entry Type
-	 * @param key The Key which is associated with this Pool Object
+	 * @param <E>  the Entry Type
+	 * @param key  The Key which is associated with this Pool Object
 	 * @param pool the pool creating this allocation
+	 *
 	 * @return Poolable Object
 	 */
 	@SuppressWarnings("unchecked")
@@ -43,11 +44,12 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 		this.pool = pool;
 		return (E) this;
 	}
-
+	
 	/**
 	 * Flags the current thread as the new Owner of this Object
 	 *
 	 * @param <E> the Entry Type
+	 *
 	 * @return PoolableObject for method chaining
 	 */
 	@SuppressWarnings("unchecked")
@@ -55,7 +57,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 		this.owner = Thread.currentThread();
 		return (E) this;
 	}
-
+	
 	/**
 	 * Releases the current owning thread from this Object
 	 *
@@ -64,7 +66,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	<E extends PoolableObject<V, K>> void releaseOwner() {
 		this.owner = null;
 	}
-
+	
 	/**
 	 * Determines if the current thread is the Owner of this object (current borrower)
 	 *
@@ -73,7 +75,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	public boolean isCurrentOwner() {
 		return Thread.currentThread().equals(owner);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -81,7 +83,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	public PoolKey<K> getKey() {
 		return key;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -89,21 +91,21 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	public String toString() {
 		return "PoolableObject [created=" + created + ", object=" + object + "]";
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	public V get() {
 		return object;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	public long getCreated() {
 		return created;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -111,7 +113,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	public void release() {
 		pool.release(this);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -119,7 +121,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	public void invalidate() {
 		pool.invalidate(this);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
