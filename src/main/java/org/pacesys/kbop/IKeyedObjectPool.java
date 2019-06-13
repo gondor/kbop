@@ -105,7 +105,7 @@ public interface IKeyedObjectPool<K, V> {
 		 * Calculates current metrics and returns a snapshot of Borrowed, Waiting counts and more
 		 * @return PoolMetrics
 		 */
-		PoolMetrics<K> getPoolMetrics();
+		PoolMetrics getPoolMetrics();
 	}
 
 }

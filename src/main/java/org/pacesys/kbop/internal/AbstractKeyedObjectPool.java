@@ -39,7 +39,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	/**
 	 * Instantiates a new abstract keyed object pool.
 	 */
-	public AbstractKeyedObjectPool(IPoolObjectFactory<K, V> factory) {
+	AbstractKeyedObjectPool(IPoolObjectFactory<K, V> factory) {
 		this.lock = new ReentrantLock();
 		this.waiting = new LinkedList<>();
 		this.borrowed = new HashSet<>();
@@ -70,7 +70,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 */
 	@Override
 	public IPooledObject<V, K> borrow(K key) throws Exception {
-		return createFuture(PoolKey.lookup(key)).get();
+		return createFuture(new PoolKey<>(key)).get();
 	}
 
 	/**
@@ -78,7 +78,7 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	 */
 	@Override
 	public IPooledObject<V, K> borrow(K key, long timeout, TimeUnit unit) throws Exception {
-		return createFuture(PoolKey.lookup(key)).get(timeout, unit);
+		return createFuture(new PoolKey<>(key)).get(timeout, unit);
 	}
 
 	/**

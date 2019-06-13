@@ -95,7 +95,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 	}
 	
 	public void verifyMetrics() throws Exception {
-		PoolMetrics<String> metrics = pool().getPoolMetrics();
+		PoolMetrics metrics = pool().getPoolMetrics();
 		assertThat(metrics).isNotNull();
 		assertThat(metrics.getBorrowedCount()).isZero();
 		assertThat(metrics.getWaitingCount()).isZero();
@@ -106,7 +106,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 	public void testMetrics() throws Exception {
 		manyThreadsBlockingUntilObtained();
 		
-		PoolMetrics<String> metrics = pool().getPoolMetrics();
+		PoolMetrics metrics = pool().getPoolMetrics();
 		assertThat(metrics).isNotNull();
 		assertThat(metrics.getBorrowedCount()).isZero();
 		assertThat(metrics.getWaitingCount()).isZero();

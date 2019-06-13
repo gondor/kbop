@@ -22,7 +22,7 @@ public abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String
 		super();
 		IPoolObjectFactory<String, String> factory = new IPoolObjectFactory<String, String>() {
 			public String create(PoolKey<String> key) {
-				return "This is a Test : " + key.get();
+				return "This is a Test : " + key.getKey();
 			}
 
 			@Override

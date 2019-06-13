@@ -1,5 +1,7 @@
 package org.pacesys.kbop;
 
+import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
@@ -11,7 +13,8 @@ import java.util.Map;
  * 
  * @author Jeremy Unruh
  */
-public class PoolMetrics<K> implements Serializable {
+@NonFinal@Value
+public class PoolMetrics implements Serializable {
 
 	private static final long serialVersionUID = -2325874226714753991L;
 
@@ -19,84 +22,12 @@ public class PoolMetrics<K> implements Serializable {
 	private final int waitingCount;
 	private final int maxObjectsPerKey;
 	private final int keyCount;
-	private final Date collectedDate;
-
-	/**
-	 * Instantiates a new pool metrics.
-	 *
-	 * @param borrowedCount the borrowed count
-	 * @param waitingCount the waiting count
-	 * @param maxObjectsPerKey the max objects per key
-	 * @param keyCount the key count
-	 */
-	public PoolMetrics(int borrowedCount, int waitingCount, int maxObjectsPerKey, int keyCount) {
-		super();
-		this.borrowedCount = borrowedCount;
-		this.waitingCount = waitingCount;
-		this.maxObjectsPerKey = maxObjectsPerKey;
-		this.keyCount = keyCount;
-		this.collectedDate = new Date();
-	}
-
-	/**
-	 * Gets the borrowed count.
-	 *
-	 * @return the borrowed count
-	 */
-	public int getBorrowedCount() {
-		return this.borrowedCount;
-	}
-
-	/**
-	 * Gets the waiting count.
-	 *
-	 * @return the waiting count
-	 */
-	public int getWaitingCount() {
-		return this.waitingCount;
-	}
-
-	/**
-	 * Gets the max objects per key.
-	 *
-	 * @return the max objects per key
-	 */
-	public int getMaxObjectsPerKey() {
-		return this.maxObjectsPerKey;
-	}
-
-	/**
-	 * Gets the key count.
-	 *
-	 * @return the key count
-	 */
-	public int getKeyCount() {
-		return this.keyCount;
-	}
-
-	/**
-	 * The date the metrics were collected
-	 * @return Metric collection date
-	 */
-	public Date getCollectedDate() {
-		return this.collectedDate;
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "PoolMetrics [collectedDate=" + this.collectedDate + ", borrowedCount=" + this.borrowedCount
-				+ ", waitingCount=" + this.waitingCount + ", keyCount=" + this.keyCount + ", maxObjectsPerKey="
-				+ this.maxObjectsPerKey + "]";
-	}
-
+	private final Date collectedDate = new Date();
+	
 	/**
 	 * Extends Pool Metrics providing extended Per-Key metrics
 	 */
-	public static class PoolMultiMetrics<K> extends PoolMetrics<K> {
+	public static class PoolMultiMetrics<K> extends PoolMetrics {
 
 		private static final long serialVersionUID = 5188832983690021017L;
 		private final Map<PoolKey<K>, KeyMetric> keyMetrics;
@@ -115,7 +46,7 @@ public class PoolMetrics<K> implements Serializable {
 		@Nullable
 		public KeyMetric getKeyMetrics(K key) {
 			if (keyMetrics != null)
-				return keyMetrics.get(PoolKey.lookup(key));
+				return keyMetrics.get(new PoolKey<>(key));
 			return null;
 		}
 
@@ -125,43 +56,16 @@ public class PoolMetrics<K> implements Serializable {
 		 * @return true if metrics are available for the given {@code key}
 		 */
 		public boolean hasMetricsForKey(K key) {
-			return keyMetrics != null && keyMetrics.containsKey(PoolKey.lookup(key));
+			return keyMetrics != null && keyMetrics.containsKey(new PoolKey<>(key));
 		}
 
 	}
 
+	@Value
 	public static class KeyMetric implements Serializable {
-
 		private static final long serialVersionUID = 916100737260197225L;
 		private final int allocationSize;
 		private final int borrowedCount;
 		private final int waitingCount;
-
-		public KeyMetric(int allocationSize, int borrowedCount, int waitingCount) {
-			super();
-			this.allocationSize = allocationSize;
-			this.borrowedCount = borrowedCount;
-			this.waitingCount = waitingCount;
-		}
-
-		public int getAllocationSize() {
-			return this.allocationSize;
-		}
-
-		public int getBorrowedCount() {
-			return this.borrowedCount;
-		}
-
-		public int getWaitingCount() {
-			return this.waitingCount;
-		}
-
-		@Override
-		public String toString() {
-			return "KeyMetric [allocationSize=" + this.allocationSize + ", borrowedCount=" + this.borrowedCount
-					+ ", waitingCount=" + this.waitingCount + "]";
-		}
-
 	}
-
 }

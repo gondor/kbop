@@ -126,6 +126,6 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	 */
 	@Override
 	public K getUserKey() {
-		return getKey().get();
+		return getKey().getKey();
 	}
 }

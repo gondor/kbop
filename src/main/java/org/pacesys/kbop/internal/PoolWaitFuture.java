@@ -152,6 +152,4 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
 	  this.lock.unlock();
 	}
   }
-
-
 }

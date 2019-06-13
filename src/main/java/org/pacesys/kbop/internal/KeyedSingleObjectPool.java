@@ -31,8 +31,8 @@ public class KeyedSingleObjectPool<K,V> extends AbstractKeyedObjectPool<K, V, Po
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PoolMetrics<K> getPoolMetrics() {
-		return new PoolMetrics<>(this.borrowed.size(), this.waiting.size(), 1, pool.keySet().size());
+	public PoolMetrics getPoolMetrics() {
+		return new PoolMetrics(this.borrowed.size(), this.waiting.size(), 1, pool.keySet().size());
 	}
 
 	/**
