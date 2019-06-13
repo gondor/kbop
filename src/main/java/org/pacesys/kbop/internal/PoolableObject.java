@@ -24,7 +24,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	 *
 	 * @param object the object
 	 */
-	public PoolableObject(@Nullable V object) {
+	PoolableObject(@Nullable V object) {
 		this.object = object;
 		this.created = System.currentTimeMillis();
 	}
@@ -70,7 +70,7 @@ public class PoolableObject<V, K> implements IPooledObject<V, K> {
 	 *
 	 * @return true, if current owner
 	 */
-	public boolean isCurrentOwner() {
+	boolean isCurrentOwner() {
 		return Thread.currentThread().equals(owner);
 	}
 	

@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ExecutionContext {
 	
-	public interface PostValidation {
+	interface PostValidation {
 		
 		<V, K> void validate(IPooledObject<V, K> borrowedObject);
 	}

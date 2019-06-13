@@ -22,7 +22,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	/**
 	 * Instantiates a new poolable objects.
 	 */
-	public PoolableObjects() {
+	PoolableObjects() {
 		super(null);
 		this.borrowed = new HashSet<>();
 		this.available = new LinkedList<>();
@@ -35,7 +35,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 * @param borrowedObject the borrowed object to free
 	 * @param reusable       true if the object can be recycled and used for future allocations
 	 */
-	public void free(IPooledObject<V, K> borrowedObject, boolean reusable) {
+	void free(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		if (borrowedObject == null) return;
 		
 		final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
@@ -53,7 +53,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 * @return Poolable Object or null if we couldn't allocate
 	 */
 	@Nullable
-	public PoolableObject<V, K> getFree() {
+	PoolableObject<V, K> getFree() {
 		if (!borrowed.isEmpty()) {
 			for (PoolableObject<V, K> bo : borrowed) {
 				if (bo.isCurrentOwner())
@@ -75,7 +75,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 *
 	 * @return the poolable object
 	 */
-	public PoolableObject<V, K> add(final PoolableObject<V, K> entry) {
+	PoolableObject<V, K> add(final PoolableObject<V, K> entry) {
 		borrowed.add(entry);
 		return entry;
 	}
@@ -85,7 +85,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 *
 	 * @param future the future who is waiting to borrow from this pool
 	 */
-	public void queue(final PoolWaitFuture<PoolableObject<V, K>> future) {
+	void queue(final PoolWaitFuture<PoolableObject<V, K>> future) {
 		if (future == null) return;
 		waiting.add(future);
 	}
@@ -95,7 +95,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 *
 	 * @param future the future
 	 */
-	public void unqueue(final PoolWaitFuture<PoolableObject<V, K>> future) {
+	void unqueue(final PoolWaitFuture<PoolableObject<V, K>> future) {
 		if (future == null) return;
 		waiting.remove(future);
 	}
@@ -106,7 +106,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 *
 	 * @return the allocation size
 	 */
-	public int getAllocationSize() {
+	int getAllocationSize() {
 		return available.size() + borrowed.size();
 	}
 	
@@ -115,8 +115,7 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 *
 	 * @return the future who has been waiting or null if no waiters
 	 */
-	@Nullable
-	public PoolWaitFuture<PoolableObject<V, K>> nextWaiting() {
+	@Nullable PoolWaitFuture<PoolableObject<V, K>> nextWaiting() {
 		return waiting.poll();
 	}
 	

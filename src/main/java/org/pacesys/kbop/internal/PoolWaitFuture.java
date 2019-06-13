@@ -29,7 +29,7 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
 	 *
 	 * @param lock the lock
 	 */
-	public PoolWaitFuture(Lock lock) {
+	PoolWaitFuture(Lock lock) {
 		this.lock = lock;
 		this.condition = lock.newCondition();
 	}
@@ -119,7 +119,7 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
 	 * @return true, if successful
 	 * @throws InterruptedException the interrupted exception
 	 */
-	public boolean await(@Nullable final Date deadline) throws InterruptedException {
+	boolean await(@Nullable final Date deadline) throws InterruptedException {
 		this.lock.lock();
 		try {
 			if (this.cancelled) {
@@ -145,7 +145,7 @@ public abstract class PoolWaitFuture<T> implements Future<T> {
 	/**
 	 * Wakes up the current listener
 	 */
-	public void wakeup() {
+	void wakeup() {
 		this.lock.lock();
 		try {
 			this.condition.signalAll();

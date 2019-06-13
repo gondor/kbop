@@ -94,7 +94,7 @@ public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool
 		verifyMetrics();
 	}
 	
-	public void verifyMetrics() throws Exception {
+	private void verifyMetrics() {
 		PoolMetrics metrics = pool().getPoolMetrics();
 		assertThat(metrics).isNotNull();
 		assertThat(metrics.getBorrowedCount()).isZero();

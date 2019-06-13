@@ -8,7 +8,7 @@ import org.pacesys.kbop.Pools;
 /**
  * Abstract Test Case for Pooled Objects
  */
-public abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String>> {
+abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String>> {
 	
 	static String POOL_KEY = "TestKey";
 	static String POOL_KEY2 = "TestKey2";
@@ -16,7 +16,7 @@ public abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String
 	private P pool;
 	
 	@SuppressWarnings("unchecked")
-	public AbstractPoolTest(int maxItemsPerKey) {
+	AbstractPoolTest(int maxItemsPerKey) {
 		super();
 		IPoolObjectFactory<String, String> factory = new IPoolObjectFactory<String, String>() {
 			public String create(PoolKey<String> key) {
