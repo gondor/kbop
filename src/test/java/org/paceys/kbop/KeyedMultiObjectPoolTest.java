@@ -1,117 +1,93 @@
 package org.paceys.kbop;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.Test;
 import org.pacesys.kbop.IKeyedObjectPool;
 import org.pacesys.kbop.IPooledObject;
 import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
-import org.testng.annotations.Test;
 
-/**
- * Test against Keyed Multi Object Pools
- * 
- * @author Jeremy Unruh
- */
-@Test(testName = "Keyed Multi Object Pool Tests")
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 public class KeyedMultiObjectPoolTest extends
 		AbstractPoolTest<IKeyedObjectPool.Multi<String, String>> {
-
+	
 	private static final int MAX_ITEMS_PER_KEY = 8;
 	private static final int OVER_LIMIT_DELTA = 15;
-	private static final int OVER_LIMIT_BLOCK_THREAD_COUNT = MAX_ITEMS_PER_KEY
-			+ OVER_LIMIT_DELTA;
-
+	private static final int OVER_LIMIT_BLOCK_THREAD_COUNT = MAX_ITEMS_PER_KEY + OVER_LIMIT_DELTA;
+	
 	public KeyedMultiObjectPoolTest() {
 		super(MAX_ITEMS_PER_KEY);
 	}
-
-	/**
-	 * Max allocated test against same key.
-	 */
+	
 	@Test
 	public void maxAllocatedTestAgainstSameKey() {
 		ExecutionContext context = ExecutionContext.get();
-		executeAndWait(createThreadedExecution(POOL_KEY,
-				OVER_LIMIT_BLOCK_THREAD_COUNT, context));
-		assertEquals(context.getTimeOutCount(), OVER_LIMIT_DELTA);
+		executeAndWait(createThreadedExecution(POOL_KEY, OVER_LIMIT_BLOCK_THREAD_COUNT, context));
+		assertThat(context.getTimeOutCount()).isEqualTo(OVER_LIMIT_DELTA);
 	}
-
-	/**
-	 * Allocation size should not grow after invalidate.
-	 */
-	@Test(dependsOnMethods = { "maxAllocatedTestAgainstSameKey" })
+	
+	@Test
 	public void allocationSizeShouldNotGrowAfterInvalidate() {
+		maxAllocatedTestAgainstSameKey();
+		
 		executeAndWait(createThreadedExecution(POOL_KEY, MAX_ITEMS_PER_KEY,
 				ExecutionContext.get().failIfUnableToBorrow(true).sleepTime(20)));
-
+		
 		// Make sure we are fully Allocated
 		PoolMultiMetrics<String> metrics = pool().getPoolMetrics();
-		assertEquals(metrics.getKeyMetrics(POOL_KEY).getAllocationSize(),
-				MAX_ITEMS_PER_KEY);
-
+		assertThat(metrics.getKeyMetrics(POOL_KEY).getAllocationSize()).isEqualTo(MAX_ITEMS_PER_KEY);
+		
 		// Run again and invalidate vs release
-		executeAndWait(createThreadedExecution(POOL_KEY, MAX_ITEMS_PER_KEY,
-				ExecutionContext.get().failIfUnableToBorrow(true)
+		executeAndWait(createThreadedExecution(POOL_KEY, MAX_ITEMS_PER_KEY, ExecutionContext.get().failIfUnableToBorrow(true)
 						.reusableAfterAllocation(false).sleepTime(20)));
 		metrics = pool().getPoolMetrics();
-		assertEquals(metrics.getKeyMetrics(POOL_KEY).getAllocationSize(), 0);
+		assertThat(metrics.getKeyMetrics(POOL_KEY).getAllocationSize()).isZero();
 	}
-
-	/**
-	 * Allocations against multiple keys fail if timeout occurs.
-	 */
-	@Test(dependsOnMethods = { "maxAllocatedTestAgainstSameKey" })
+	
+	@Test
 	public void allocationsAgainstMultipleKeysFailIfTimeoutOccurs() {
-		ExecutionContext context = ExecutionContext.get()
-				.failIfUnableToBorrow(true);
-		Set<Thread> threads = createThreadedExecution(POOL_KEY, MAX_ITEMS_PER_KEY,
-				context);
-		threads.addAll(createThreadedExecution(POOL_KEY2, MAX_ITEMS_PER_KEY,
-				context));
+		maxAllocatedTestAgainstSameKey();
+		
+		ExecutionContext context = ExecutionContext.get().failIfUnableToBorrow(true);
+		Set<Thread> threads = createThreadedExecution(POOL_KEY, MAX_ITEMS_PER_KEY, context);
+		threads.addAll(createThreadedExecution(POOL_KEY2, MAX_ITEMS_PER_KEY, context));
 		executeAndWait(threads);
 	}
-
-	/**
-	 * High concurrency volume test.
-	 */
-	@Test(dependsOnMethods = { "maxAllocatedTestAgainstSameKey" })
+	
+	@Test
 	public void highConcurrencyVolumeTest() {
+		maxAllocatedTestAgainstSameKey();
+		
 		ExecutionContext context = ExecutionContext.get().maxWaitTime(0)
 				.sleepTime(10);
 		executeAndWait(createThreadedExecution(POOL_KEY, 100, context));
-
-		assertTrue(context.getTimeOutCount() == 0);
-
+		
+		assertThat(context.getTimeOutCount() == 0).isTrue();
+		
 		PoolMultiMetrics<String> metrics = pool().getPoolMetrics();
-		assertEquals(metrics.getKeyMetrics(POOL_KEY).getAllocationSize(),
-				MAX_ITEMS_PER_KEY);
+		assertThat(metrics.getKeyMetrics(POOL_KEY).getAllocationSize()).isEqualTo(MAX_ITEMS_PER_KEY);
 	}
-
-	/**
-	 * Test pool sizes.
-	 */
-	@Test(dependsOnMethods = { "allocationsAgainstMultipleKeysFailIfTimeoutOccurs" })
+	
+	@Test
 	public void testPoolSizes() {
+		allocationsAgainstMultipleKeysFailIfTimeoutOccurs();
+		
 		PoolMultiMetrics<String> metrics = pool().getPoolMetrics();
-		assertNotNull(metrics);
-		assertEquals(metrics.getBorrowedCount(), 0);
-		assertEquals(metrics.getWaitingCount(), 0);
-		assertEquals(metrics.getKeyCount(), 2);
+		assertThat(metrics).isNotNull();
+		assertThat(metrics.getBorrowedCount()).isZero();
+		assertThat(metrics.getWaitingCount()).isZero();
+		assertThat(metrics.getKeyCount()).isEqualTo(2);
 	}
-
-	/**
-	 * Tests shutting down the pool and not allowing any more allocations
-	 */
-	@Test(dependsOnMethods = { "testPoolSizes" }, expectedExceptions = { IllegalStateException.class })
+	
+	@Test(expected = IllegalStateException.class)
 	public void testShutdown() {
+		testPoolSizes();
+		
 		pool().shutdown();
 		try {
 			pool().borrow(POOL_KEY);
@@ -121,38 +97,21 @@ public class KeyedMultiObjectPoolTest extends
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * Creates the threaded execution.
-	 * 
-	 * @param key
-	 *          the key
-	 * @param threadCount
-	 *          the thread count
-	 * @param context
-	 *          the context
-	 * @return the sets the
-	 */
+	
 	private Set<Thread> createThreadedExecution(final String key,
-			int threadCount, final ExecutionContext context) {
+												int threadCount, final ExecutionContext context) {
 		Set<Thread> threads = new HashSet<Thread>(threadCount);
 		for (int i = 0; i < threadCount; i++) {
 			threads.add(new Thread(new Runnable() {
 				public void run() {
 					validateBorrowFromPool(key, context);
 				}
-
+				
 			}));
 		}
 		return threads;
 	}
-
-	/**
-	 * Execute and wait.
-	 * 
-	 * @param threads
-	 *          the threads
-	 */
+	
 	private void executeAndWait(Set<Thread> threads) {
 		for (Thread t : threads)
 			t.start();
@@ -164,15 +123,7 @@ public class KeyedMultiObjectPoolTest extends
 			}
 		}
 	}
-
-	/**
-	 * Validate borrow from pool.
-	 * 
-	 * @param key
-	 *          the key
-	 * @param context
-	 *          the context
-	 */
+	
 	private void validateBorrowFromPool(String key, ExecutionContext context) {
 		IPooledObject<String> obj = null;
 		try {
@@ -181,16 +132,16 @@ public class KeyedMultiObjectPoolTest extends
 			if (context.verifyCanGetSameInstance) {
 				IPooledObject<String> obj2 = pool().borrow(key, context.maxWaitTime,
 						TimeUnit.MILLISECONDS);
-				assertTrue(obj.equals(obj2));
+				assertThat(obj.equals(obj2)).isTrue();
 			}
 			context.validate(obj);
 		} catch (TimeoutException e) {
 			if (context.failIfUnableToBorrow)
 				fail("Unable to borrow object : " + e.getMessage());
 			else
-				assertTrue(pool().getPoolMetrics().getKeyMetrics(key)
-						.getBorrowedCount() == MAX_ITEMS_PER_KEY);
-
+				assertThat(pool().getPoolMetrics().getKeyMetrics(key)
+						.getBorrowedCount() == MAX_ITEMS_PER_KEY).isTrue();
+			
 			context.incrementTimeOutCount();
 		} catch (Exception e) {
 			fail(e.getMessage(), e);
@@ -203,5 +154,4 @@ public class KeyedMultiObjectPoolTest extends
 			}
 		}
 	}
-
 }

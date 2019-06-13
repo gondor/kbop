@@ -1,9 +1,12 @@
 package org.paceys.kbop;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import org.junit.Test;
+import org.pacesys.kbop.IKeyedObjectPool;
+import org.pacesys.kbop.IPoolObjectFactory;
+import org.pacesys.kbop.IPooledObject;
+import org.pacesys.kbop.PoolKey;
+import org.pacesys.kbop.PoolMetrics;
+import org.pacesys.kbop.Pools;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,22 +14,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.pacesys.kbop.IKeyedObjectPool;
-import org.pacesys.kbop.IPoolObjectFactory;
-import org.pacesys.kbop.IPooledObject;
-import org.pacesys.kbop.PoolKey;
-import org.pacesys.kbop.PoolMetrics;
-import org.pacesys.kbop.Pools;
-import org.testng.annotations.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
-/**
- * Keyed Single Object Pool functional Tests
- * 
- * @author Jeremy Unruh
- */
-@Test(testName = "Keyed Single Object Pool Tests")
-public class KeyedSingleObjectPoolTest extends
-		AbstractPoolTest<IKeyedObjectPool.Single<String, String>> {
+public class KeyedSingleObjectPoolTest extends AbstractPoolTest<IKeyedObjectPool.Single<String, String>> {
 
 	/**
 	 * Instantiates a new keyed single object pool test.
@@ -35,14 +26,10 @@ public class KeyedSingleObjectPoolTest extends
 		super(1);
 	}
 
-	/**
-	 * Wait for object with timeout test.
-	 * 
-	 * @throws Exception
-	 *           the exception
-	 */
-	@Test(dependsOnMethods = { "singleBorrowAndRelease" })
+	@Test
 	public void waitForObjectWithTimeoutTest() throws Exception {
+		singleBorrowAndRelease();
+		
 		IPooledObject<String> obj = pool().borrow(POOL_KEY);
 		try {
 			ExecutorService es = Executors.newSingleThreadExecutor();
@@ -54,7 +41,7 @@ public class KeyedSingleObjectPoolTest extends
 						obj.release();
 						fail("Object was obtained");
 					} catch (Exception e) {
-						assertTrue(e instanceof TimeoutException);
+						assertThat(e instanceof TimeoutException).isTrue();
 					}
 				}
 
@@ -62,7 +49,7 @@ public class KeyedSingleObjectPoolTest extends
 
 			// Test that the main thread can still acquire the object since it owns
 			// the contract and hasn't releasd it yet
-			assertNotNull(pool().borrow(POOL_KEY));
+			assertThat(pool().borrow(POOL_KEY)).isNotNull();
 
 			// block until thread is done
 			f.get();
@@ -71,22 +58,18 @@ public class KeyedSingleObjectPoolTest extends
 		}
 	}
 
-	/**
-	 * Many threads blocking until obtained.
-	 * 
-	 * @throws Exception
-	 *           the exception
-	 */
-	@Test(dependsOnMethods = { "waitForObjectWithTimeoutTest" })
+	@Test
 	public void manyThreadsBlockingUntilObtained() throws Exception {
+		waitForObjectWithTimeoutTest();
+		
 		Runnable r = new Runnable() {
 			public void run() {
 				IPooledObject<String> obj = null;
 				try {
 					obj = pool().borrow(POOL_KEY);
-					assertNotNull(obj);
+					assertThat(obj).isNotNull();
 					Thread.sleep(20);
-					assertNotNull(pool().borrow(POOL_KEY));
+					assertThat(pool().borrow(POOL_KEY)).isNotNull();
 				} catch (Exception e) {
 					fail("Failed to obtain Object: " + Thread.currentThread().getName());
 				} finally {
@@ -106,25 +89,37 @@ public class KeyedSingleObjectPoolTest extends
 	@Test
 	public void singleBorrowAndRelease() throws Exception {
 		IPooledObject<String> obj = pool().borrow(POOL_KEY);
-		assertNotNull(obj);
+		assertThat(obj).isNotNull();
 		pool().release(obj);
 		verifyMetrics();
 	}
-
-	@Test(dependsOnMethods = { "manyThreadsBlockingUntilObtained" })
-	public void verifyMetrics() {
+	
+	public void verifyMetrics() throws Exception {
 		PoolMetrics<String> metrics = pool().getPoolMetrics();
-		assertNotNull(metrics);
-		assertEquals(metrics.getBorrowedCount(), 0);
-		assertEquals(metrics.getWaitingCount(), 0);
-		assertEquals(metrics.getKeyCount(), 1);
+		assertThat(metrics).isNotNull();
+		assertThat(metrics.getBorrowedCount()).isZero();
+		assertThat(metrics.getWaitingCount()).isZero();
+		assertThat(metrics.getKeyCount()).isEqualTo(1);
+	}
+	
+	@Test
+	public void testMetrics() throws Exception {
+		manyThreadsBlockingUntilObtained();
+		
+		PoolMetrics<String> metrics = pool().getPoolMetrics();
+		assertThat(metrics).isNotNull();
+		assertThat(metrics.getBorrowedCount()).isZero();
+		assertThat(metrics.getWaitingCount()).isZero();
+		assertThat(metrics.getKeyCount()).isEqualTo(1);
 	}
 
 	/**
 	 * Tests shutting down the pool and not allowing any more allocations
 	 */
-	@Test(dependsOnMethods = { "verifyMetrics" }, expectedExceptions = { IllegalStateException.class })
-	public void testShutdown() {
+	@Test(expected = IllegalStateException.class)
+	public void testShutdown() throws Exception {
+		testMetrics();
+		
 		pool().shutdown();
 		try {
 			pool().borrow(POOL_KEY);
@@ -138,8 +133,6 @@ public class KeyedSingleObjectPoolTest extends
 	/**
 	 * Tests the Factory Lifecycle to insure the pool is calling factory during
 	 * each phase within the objects lifecycle
-	 * 
-	 * @throws Exception
 	 */
 	@Test
 	public void testObjectLifecycle() throws Exception {
@@ -151,7 +144,7 @@ public class KeyedSingleObjectPoolTest extends
 		obj = pool.borrow(POOL_KEY);
 		obj.invalidate();
 
-		assertEquals(factory.lifecycleCount, 4);
+		assertThat(factory.lifecycleCount).isEqualTo(4);
 	}
 
 	static class TestLifecycleFactory implements
