@@ -12,7 +12,6 @@ import org.pacesys.kbop.IPooledObject;
  * 
  * @param <V> Contained Object Type
  * @param <K> The pool key type
- * @author Jeremy Unruh
  */
 class PoolableObjects<V, K> extends PoolableObject<V, K> {
 

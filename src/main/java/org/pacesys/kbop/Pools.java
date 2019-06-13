@@ -5,8 +5,6 @@ import org.pacesys.kbop.internal.KeyedSingleObjectPool;
 
 /**
  * Static utility methods pertaining to  {@link IKeyedObjectPool} instances
- * 
- * @author Jeremy Unruh
  */
 public class Pools {
 

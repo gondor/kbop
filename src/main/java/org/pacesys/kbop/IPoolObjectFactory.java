@@ -6,8 +6,6 @@ package org.pacesys.kbop;
  *
  * @param <K> the key type
  * @param <V> the value type
- * 
- * @author Jeremy Unruh
  */
 public interface IPoolObjectFactory<K, V> {
 

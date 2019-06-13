@@ -7,8 +7,6 @@ import org.pacesys.kbop.Pools;
 
 /**
  * Abstract Test Case for Pooled Objects
- * 
- * @author Jeremy Unruh
  */
 public abstract class AbstractPoolTest<P extends IKeyedObjectPool<String, String>> {
 

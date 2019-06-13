@@ -5,7 +5,6 @@ package org.pacesys.kbop;
  * 
  * @param <V> the value type
  * @param <K> the pool key type
- * @author Jeremy Unruh
  */
 public interface IPooledObject<V, K> {
 

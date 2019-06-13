@@ -12,7 +12,6 @@ import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
  * 
  * @param <K> the key type
  * @param <V> the Object being borrowed Type
- * @author Jeremy Unruh
  */
 public interface IKeyedObjectPool<K, V> {
 
@@ -83,7 +82,6 @@ public interface IKeyedObjectPool<K, V> {
 	 * 
 	 * @param <K> the key type
 	 * @param <V> the Object being borrowed Type
-	 * @author Jeremy Unruh
 	 */
 	interface Multi<K, V> extends IKeyedObjectPool<K, V> {
 		/**
@@ -98,7 +96,6 @@ public interface IKeyedObjectPool<K, V> {
 	 * 
 	 * @param <K> the key type
 	 * @param <V> the Object being borrowed Type
-	 * @author Jeremy Unruh
 	 */
 	interface Single<K, V> extends IKeyedObjectPool<K, V> {
 		/**

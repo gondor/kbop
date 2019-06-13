@@ -15,7 +15,6 @@ import java.util.concurrent.locks.Lock;
  * A future which waits until the Pooled Object is available or times out
  * 
  * @param <T> the generic type
- * @author Jeremy Unruh
  */
 public abstract class PoolWaitFuture<T> implements Future<T> {
 

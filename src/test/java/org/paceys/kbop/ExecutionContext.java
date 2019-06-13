@@ -7,8 +7,6 @@ import org.pacesys.kbop.IPooledObject;
 /**
  * Concurrent Test Execution Context which allows for various options to be
  * passed through to a Runnable cutting down on Test Boiler Plate code
- * 
- * @author Jeremy Unruh
  */
 public class ExecutionContext {
 

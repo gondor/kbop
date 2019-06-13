@@ -10,8 +10,6 @@ import org.pacesys.kbop.PoolMetrics;
  * 
  * @param <K> the key type
  * @param <V> the pooled object
- * 
- * @author Jeremy Unruh
  */
 public class KeyedSingleObjectPool<K,V> extends AbstractKeyedObjectPool<K, V, PoolableObject<V, K>> implements IKeyedObjectPool.Single<K, V> {
 

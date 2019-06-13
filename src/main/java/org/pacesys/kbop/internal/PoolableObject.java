@@ -10,7 +10,6 @@ import org.pacesys.kbop.PoolKey;
  * 
  * @param <V> the value type
  * @param <K> the pool key type
- * @author Jeremy Unruh
  */
 public class PoolableObject<V, K> implements IPooledObject<V, K> {
 

@@ -9,8 +9,6 @@ import java.util.Map;
 
 /**
  * Provides a metrics snapshot for a Pool
- * 
- * @author Jeremy Unruh
  */
 @NonFinal@Value
 public class PoolMetrics {

@@ -17,7 +17,6 @@ import org.pacesys.kbop.PoolMetrics.PoolMultiMetrics;
  * 
  * @param <K> the key type
  * @param <V> the value type
- * @author Jeremy Unruh
  */
 public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, PoolableObject<V, K>> implements IKeyedObjectPool.Multi<K, V> {
 

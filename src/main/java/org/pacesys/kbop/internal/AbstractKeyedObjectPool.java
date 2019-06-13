@@ -24,7 +24,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <K> The internal pool key type
  * @param <V> the object to Borrow
  * @param <E> the pool object holder containing the pooled object
- * @author Jeremy Unruh
  */
 public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, K>> implements IKeyedObjectPool<K, V> {
 
