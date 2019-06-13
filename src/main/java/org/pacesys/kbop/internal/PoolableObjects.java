@@ -37,8 +37,9 @@ class PoolableObjects<V, K> extends PoolableObject<V, K> {
 	 */
 	public void free(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		if (borrowedObject == null) return;
-
-		if (borrowed.remove(borrowedObject))
+		
+		final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
+		if (borrowed.remove(borrowedVK))
 		{
 			((PoolableObject<V, K>)borrowedObject).releaseOwner();
 			if (reusable)
