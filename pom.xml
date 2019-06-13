@@ -27,8 +27,24 @@
 		<developer>
 			<name>Jeremy Unruh</name>
 			<url>http://www.pacesys.org</url>
+			<roles>
+				<role>developer</role>
+				<role>packager</role>
+			</roles>
 		</developer>
 	</developers>
+
+	<contributors>
+		<contributor>
+			<name>Benny Bottema</name>
+			<email>benny@bennybottema.com</email>
+			<url>http://www.bennybottema.com</url>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>Europe/Amsterdam</timezone>
+		</contributor>
+	</contributors>
 
 	<scm>
 		<connection>scm:git:git@github.com:gondor/kbop.git</connection>
