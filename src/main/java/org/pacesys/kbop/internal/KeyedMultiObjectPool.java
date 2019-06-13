@@ -35,7 +35,8 @@ public class KeyedMultiObjectPool<K, V> extends AbstractKeyedObjectPool<K, V, Po
 	
 	protected void release(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		lock.lock();
-		if (borrowed.remove(borrowedObject))
+		final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
+		if (borrowed.remove(borrowedVK))
 		{
 			PoolableObjects<V, K> pos = objectPool(borrowedObject.getKey(), Boolean.FALSE);
 			if (pos != null) {

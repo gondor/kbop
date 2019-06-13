@@ -2,8 +2,6 @@ package org.pacesys.kbop;
 
 import lombok.Value;
 
-import java.io.Serializable;
-
 /**
  * Key used to point to the Object Pool Entry(s)
  *
@@ -11,7 +9,6 @@ import java.io.Serializable;
  * @author Jeremy Unruh
  */
 @Value
-public class PoolKey<K> implements Cloneable, Serializable {
-	private static final long serialVersionUID = 4383493776548641532L;
+public class PoolKey<K> {
 	private final K key;
 }

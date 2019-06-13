@@ -1,5 +1,11 @@
 package org.pacesys.kbop.internal;
 
+import org.jetbrains.annotations.Nullable;
+import org.pacesys.kbop.IKeyedObjectPool;
+import org.pacesys.kbop.IPoolObjectFactory;
+import org.pacesys.kbop.IPooledObject;
+import org.pacesys.kbop.PoolKey;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -10,12 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.jetbrains.annotations.Nullable;
-import org.pacesys.kbop.IKeyedObjectPool;
-import org.pacesys.kbop.IPoolObjectFactory;
-import org.pacesys.kbop.IPooledObject;
-import org.pacesys.kbop.PoolKey;
 
 /**
  * Thread-Safe - Abstract synchronous (blocking) pool of Objects which provides the base implementation for single key to single object and single key to multiple object
@@ -29,8 +29,8 @@ import org.pacesys.kbop.PoolKey;
 public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, K>> implements IKeyedObjectPool<K, V> {
 
 	final Lock lock;
-	final ConcurrentMap<PoolKey<K>,E> pool;
-	final Set<E> borrowed;
+	final ConcurrentMap<PoolKey<K>, E> pool;
+	final Set<PoolableObject<V, K>> borrowed;
 	final LinkedList<PoolWaitFuture<E>> waiting;
 	final IPoolObjectFactory<K, V> factory;
 	private volatile boolean isShutDown;
@@ -104,7 +104,8 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 
 	protected void release(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		lock.lock();
-		if (borrowed.remove(borrowedObject))
+		final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
+		if (borrowed.remove(borrowedVK))
 		{
 			((PoolableObject<V, K>)borrowedObject).releaseOwner();
 			if (!reusable)
@@ -152,18 +153,12 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 		lock.lock();
 		try
 		{
-			E entry;
-			for(;;) 
-			{
+			do {
 				validateShutdown();
-				entry = createOrAttemptToBorrow(key);
-
-				if (entry != null) 
+				E entry = createOrAttemptToBorrow(key);
+				if (entry != null)
 					return entry.flagOwner();
-
-				if (!await(future, key, deadline) && deadline != null && deadline.getTime() <= System.currentTimeMillis())  break;
-
-			}
+			} while (await(future, key, deadline) || deadline == null || deadline.getTime() > System.currentTimeMillis());
 			throw new TimeoutException("Timeout waiting for Pool for Key: " + key);
 		}
 		finally {

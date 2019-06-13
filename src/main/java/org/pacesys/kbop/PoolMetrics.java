@@ -4,7 +4,6 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
@@ -14,9 +13,7 @@ import java.util.Map;
  * @author Jeremy Unruh
  */
 @NonFinal@Value
-public class PoolMetrics implements Serializable {
-
-	private static final long serialVersionUID = -2325874226714753991L;
+public class PoolMetrics {
 
 	private final int borrowedCount;
 	private final int waitingCount;
@@ -29,7 +26,6 @@ public class PoolMetrics implements Serializable {
 	 */
 	public static class PoolMultiMetrics<K> extends PoolMetrics {
 
-		private static final long serialVersionUID = 5188832983690021017L;
 		private final Map<PoolKey<K>, KeyMetric> keyMetrics;
 
 		public PoolMultiMetrics(int borrowedCount, int waitingCount, int maxObjectsPerKey, Map<PoolKey<K>, KeyMetric> keyMetrics) {
@@ -62,8 +58,7 @@ public class PoolMetrics implements Serializable {
 	}
 
 	@Value
-	public static class KeyMetric implements Serializable {
-		private static final long serialVersionUID = 916100737260197225L;
+	public static class KeyMetric {
 		private final int allocationSize;
 		private final int borrowedCount;
 		private final int waitingCount;
