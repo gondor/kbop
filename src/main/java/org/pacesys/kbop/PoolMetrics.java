@@ -1,10 +1,10 @@
 package org.pacesys.kbop;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -18,11 +18,11 @@ public class PoolMetrics {
 	private final int waitingCount;
 	private final int maxObjectsPerKey;
 	private final int keyCount;
-	private final Date collectedDate = new Date();
 	
 	/**
 	 * Extends Pool Metrics providing extended Per-Key metrics
 	 */
+	@EqualsAndHashCode(callSuper = true)
 	public static class PoolMultiMetrics<K> extends PoolMetrics {
 		
 		private final Map<PoolKey<K>, KeyMetric> keyMetrics;

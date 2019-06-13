@@ -105,21 +105,24 @@ public abstract class AbstractKeyedObjectPool<K, V, E extends PoolableObject<V, 
 	
 	protected void release(IPooledObject<V, K> borrowedObject, boolean reusable) {
 		lock.lock();
-		final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
-		if (borrowed.remove(borrowedVK)) {
-			((PoolableObject<V, K>) borrowedObject).releaseOwner();
-			if (!reusable) {
-				factory.destroy(borrowedObject.get());
-				pool.remove(borrowedObject.getKey());
-			} else
-				factory.passivate(borrowedObject.get());
-			
-			PoolWaitFuture<E> future = waiting.poll();
-			if (future != null) {
-				future.wakeup();
+		try {
+			final PoolableObject<V, K> borrowedVK = (PoolableObject<V, K>) borrowedObject;
+			if (borrowed.remove(borrowedVK)) {
+				((PoolableObject<V, K>) borrowedObject).releaseOwner();
+				if (!reusable) {
+					factory.destroy(borrowedObject.get());
+					pool.remove(borrowedObject.getKey());
+				} else
+					factory.passivate(borrowedObject.get());
+				
+				PoolWaitFuture<E> future = waiting.poll();
+				if (future != null) {
+					future.wakeup();
+				}
 			}
+		} finally {
+			lock.unlock();
 		}
-		lock.unlock();
 	}
 	
 	/**
